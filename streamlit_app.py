@@ -27,7 +27,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ROOT = Path(__file__).resolve().parent
-DATA_DIR = ROOT / "dados_limpos _alunos"
+
+# Busca o diretório de dados independente do espaço ou underline
+if (ROOT / "dados_limpos _alunos").exists():
+    DATA_DIR = ROOT / "dados_limpos _alunos"
+elif (ROOT / "dados_limpos_alunos").exists():
+    DATA_DIR = ROOT / "dados_limpos_alunos"
+elif (ROOT / "dados_limpos%20_alunos").exists():
+    DATA_DIR = ROOT / "dados_limpos%20_alunos"
+else:
+    # Se rodou pelo github de uma forma diferente, lista as pastas para tentar adivinhar
+    for path in ROOT.glob("dados*"):
+        if path.is_dir():
+            DATA_DIR = path
+            break
+    else:
+        DATA_DIR = ROOT / "dados_limpos _alunos"
+
 
 WEEKDAY_ORDER = ["SEGUNDA-FEIRA", "TERCA-FEIRA", "QUARTA-FEIRA", "QUINTA-FEIRA", "SEXTA-FEIRA", "SABADO", "DOMINGO"]
 WEEKDAY_LABELS = {"SEGUNDA-FEIRA": "Seg", "TERCA-FEIRA": "Ter", "QUARTA-FEIRA": "Qua", "QUINTA-FEIRA": "Qui", "SEXTA-FEIRA": "Sex", "SABADO": "Sáb", "DOMINGO": "Dom"}
