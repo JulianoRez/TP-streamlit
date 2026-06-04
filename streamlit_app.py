@@ -34,13 +34,7 @@ def format_float(value, digits=2): return f"{value:.{digits}f}".replace(".", ","
 # --- Páginas ---
 def page_intro():
     st.markdown('<p class="main-header">Acidentes de Trânsito em Belo Horizonte</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Dashboard Analítico - Introdução à Ciência de Dados</p>', unsafe_allow_html=True)
     
-    st.write("""
-        Bem-vindo ao dashboard interativo do nosso estudo sobre acidentes de trânsito.
-        Este projeto integra diferentes bases públicas para extrair padrões estatísticos reais sobre 
-        letalidade, sazonalidade e fatores de risco no trânsito da capital mineira.
-    """)
     
     st.divider()
     
@@ -63,7 +57,6 @@ def page_intro():
 
 def page_tratamento():
     st.title("Tratamento das Bases")
-    st.markdown("Esta seção detalha o fluxo de limpeza e padronização dos dados utilizados para cada uma das perguntas de pesquisa, conforme os scripts do projeto.")
 
     tab1, tab2, tab3, tab4 = st.tabs(["P1: Vítimas", "P2: Ocorrências Temporais", "P3: Veículos", "P4: Condições da Via"])
 
@@ -132,7 +125,6 @@ def page_pergunta_1():
     tab1, tab2, tab3 = st.tabs(["Exploração", "Testes e IC", "Conclusões"])
     
     with tab1:
-        st.write("Visualização da proporção de vítimas graves ou fatais por perfil, conforme apurado na limpeza do grupo (removidos ignorados e nulos).")
         
         sexo = pd.DataFrame({"Sexo": ["Homens", "Mulheres"], "Taxa": [0.0904, 0.0702]})
         cor = pd.DataFrame({"Cor/Raça": ["Negra", "Preto", "Parda", "Branca"], "Taxa": [0.0972, 0.0860, 0.0855, 0.0797]})
@@ -196,7 +188,6 @@ def page_pergunta_2():
     tab1, tab2, tab3 = st.tabs(["Análise Exploratória", "Testes e IC", "Conclusões"])
     
     with tab1:
-        st.write("Agrupamos os acidentes por hora, dia da semana e mês. Usamos **médias diárias** para evitar vieses de calendário.")
         
         col1, col2 = st.columns(2)
         with col1:
@@ -256,13 +247,11 @@ def page_pergunta_3():
     
     tab1, tab2, tab3 = st.tabs(["Análise Geral", "Testes Específicos (A/B e Bootstrap)", "Conclusões"])
     with tab1:
-        st.write("Análise da relação entre configuração veicular (porte pesado e motos) e a presença de vítimas graves ou fatais.")
-        st.info("O agrupamento identificou veículos de grande massa (Ônibus, Micro-ônibus e Caminhões) versus demais veículos, e testou a hipótese do impacto ser pior com veículos pesados e com motocicletas.")
         
         st.empty()
 
     with tab2:
-        st.subheader("Testes de Hipótese (Diferença nas Taxas Médias de Gravidade)")
+        st.subheader("Testes de Hipótese")
 
         colA, colB, colC = st.columns(3)
         with colA:
@@ -318,11 +307,6 @@ def page_pergunta_4():
         with col3:
             st.empty()
             
-        st.markdown("""
-        1. A maioria esmagadora dos acidentes acontecem no asfalto, podendo levar a insights sobre a falsa sensação de segurança.
-        2. Outra maioria exorbitante é de acidentes em pistas simples, o que nos leva a possivelmente entender como essas pistas levam a mais colisões frontais em ultrapassagens.
-        3. A sinalização é predominantemente boa, compondo mais de 60% dos casos de acidentes. Isso indica que a falta de sinalização não é uma das causas primárias para os acidentes.
-        """)
 
     with tab2:
         st.subheader("Testes Estatísticos de Associação")
@@ -402,6 +386,6 @@ PAGES = {
 st.sidebar.title("Navegação")
 selection = st.sidebar.radio("Ir para:", list(PAGES.keys()))
 st.sidebar.divider()
-st.sidebar.caption("TP de ICD - UFMG | Dashboards com Streamlit e Plotly")
+st.sidebar.caption("TP de ICD - UFMG")
 
 PAGES[selection]()
