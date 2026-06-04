@@ -140,22 +140,17 @@ def page_pergunta_1():
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            fig1 = px.bar(sexo, x="Sexo", y="Taxa", text=sexo["Taxa"].apply(lambda x: format_pct(x, 2)), 
-                          title="Gravidade por Sexo", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[0]])
-            fig1.update_layout(yaxis_tickformat=".0%")
-            st.plotly_chart(fig1, use_container_width=True)
-            
+            st.markdown("**Gravidade por Sexo**")
+            sexo["Taxa (%)"] = sexo["Taxa"].apply(lambda x: format_pct(x, 2))
+            st.table(sexo[["Sexo", "Taxa (%)"]])
         with col2:
-            fig2 = px.bar(cor, x="Cor/Raça", y="Taxa", text=cor["Taxa"].apply(lambda x: format_pct(x, 2)), 
-                          title="Gravidade por Cor/Raça", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[1]])
-            fig2.update_layout(yaxis_tickformat=".0%")
-            st.plotly_chart(fig2, use_container_width=True)
-            
+            st.markdown("**Gravidade por Cor/Raça**")
+            cor["Taxa (%)"] = cor["Taxa"].apply(lambda x: format_pct(x, 2))
+            st.table(cor[["Cor/Raça", "Taxa (%)"]])
         with col3:
-            fig3 = px.bar(faixa, x="Faixa Etária", y="Taxa", text=faixa["Taxa"].apply(lambda x: format_pct(x, 2)), 
-                          title="Gravidade por Faixa Etária", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[2]])
-            fig3.update_layout(yaxis_tickformat=".0%")
-            st.plotly_chart(fig3, use_container_width=True)
+            st.markdown("**Gravidade por Faixa Etária**")
+            faixa["Taxa (%)"] = faixa["Taxa"].apply(lambda x: format_pct(x, 2))
+            st.table(faixa[["Faixa Etária", "Taxa (%)"]])
 
     with tab2:
         st.subheader("Teste de Hipótese: Homens Jovens (18-25) e Pardos")
@@ -327,14 +322,14 @@ def page_pergunta_4():
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            fig1 = px.bar(pav_df, y="Tipo de Pavimento", x="Porcentagem", orientation='h', title="Pavimento (Asfalto absoluto)", template="plotly_white")
-            st.plotly_chart(fig1, use_container_width=True)
+            st.markdown("**Pavimento**")
+            st.table(pav_df)
         with col2:
-            fig2 = px.bar(via_df, y="Tipo de Via", x="Porcentagem", orientation='h', title="Tipo da Pista", template="plotly_white")
-            st.plotly_chart(fig2, use_container_width=True)
+            st.markdown("**Tipo da Pista**")
+            st.table(via_df)
         with col3:
-            fig3 = px.bar(sin_df, y="Sinalização", x="Porcentagem", orientation='h', title="Sinalização", template="plotly_white")
-            st.plotly_chart(fig3, use_container_width=True)
+            st.markdown("**Sinalização**")
+            st.table(sin_df)
             
         st.markdown("""
         1. A maioria esmagadora dos acidentes acontecem no asfalto, podendo levar a insights sobre a falsa sensação de segurança.
