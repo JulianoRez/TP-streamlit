@@ -140,17 +140,11 @@ def page_pergunta_1():
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown("**Gravidade por Sexo**")
-            sexo["Taxa (%)"] = sexo["Taxa"].apply(lambda x: format_pct(x, 2))
-            st.table(sexo[["Sexo", "Taxa (%)"]])
+            st.empty()
         with col2:
-            st.markdown("**Gravidade por Cor/Raça**")
-            cor["Taxa (%)"] = cor["Taxa"].apply(lambda x: format_pct(x, 2))
-            st.table(cor[["Cor/Raça", "Taxa (%)"]])
+            st.empty()
         with col3:
-            st.markdown("**Gravidade por Faixa Etária**")
-            faixa["Taxa (%)"] = faixa["Taxa"].apply(lambda x: format_pct(x, 2))
-            st.table(faixa[["Faixa Etária", "Taxa (%)"]])
+            st.empty()
 
     with tab2:
         st.subheader("Teste de Hipótese: Homens Jovens (18-25) e Pardos")
@@ -265,11 +259,7 @@ def page_pergunta_3():
         st.write("Análise da relação entre configuração veicular (porte pesado e motos) e a presença de vítimas graves ou fatais.")
         st.info("O agrupamento identificou veículos de grande massa (Ônibus, Micro-ônibus e Caminhões) versus demais veículos, e testou a hipótese do impacto ser pior com veículos pesados e com motocicletas.")
         
-        grupos = pd.DataFrame({
-            "Envolvimento": ["Pesados (Geral)", "Pesados (Pedestres)", "Motos (Condutores/Passageiros)"],
-            "Diferença Observada Média": ["Positiva (+)", "Positiva (++)", "Negativa (-)"]
-        })
-        st.table(grupos)
+        st.empty()
 
     with tab2:
         st.subheader("Testes de Hipótese (Diferença nas Taxas Médias de Gravidade)")
@@ -322,14 +312,11 @@ def page_pergunta_4():
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown("**Pavimento**")
-            st.table(pav_df)
+            st.empty()
         with col2:
-            st.markdown("**Tipo da Pista**")
-            st.table(via_df)
+            st.empty()
         with col3:
-            st.markdown("**Sinalização**")
-            st.table(sin_df)
+            st.empty()
             
         st.markdown("""
         1. A maioria esmagadora dos acidentes acontecem no asfalto, podendo levar a insights sobre a falsa sensação de segurança.
