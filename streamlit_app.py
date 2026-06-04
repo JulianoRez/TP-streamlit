@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import scipy.stats as ss
 import streamlit as st
 
 # --- Configurações da Página ---
@@ -26,93 +25,30 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-ROOT = Path(__file__).resolve().parent
-
-# Busca o diretório de dados independente do nome da pasta (procura pelo arquivo)
-try:
-    csv_file = next(ROOT.rglob("registros_limpo.csv"))
-    DATA_DIR = csv_file.parent
-except StopIteration:
-    # Fallback se não encontrar o arquivo
-    DATA_DIR = ROOT / "dados_limpos _alunos"
-
-
-WEEKDAY_ORDER = ["SEGUNDA-FEIRA", "TERCA-FEIRA", "QUARTA-FEIRA", "QUINTA-FEIRA", "SEXTA-FEIRA", "SABADO", "DOMINGO"]
-WEEKDAY_LABELS = {"SEGUNDA-FEIRA": "Seg", "TERCA-FEIRA": "Ter", "QUARTA-FEIRA": "Qua", "QUINTA-FEIRA": "Qui", "SEXTA-FEIRA": "Sex", "SABADO": "Sáb", "DOMINGO": "Dom"}
-MONTH_LABELS = {1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun", 7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez"}
 COLOR_PALETTE = px.colors.qualitative.Prism
 
-# --- Funções Auxiliares ---
+# --- Funções Auxiliares de Formatação ---
 def format_int(value): return f"{int(round(value)):,}".replace(",", ".")
 def format_pct(value, digits=2): return f"{value * 100:.{digits}f}%".replace(".", ",")
 def format_float(value, digits=2): return f"{value:.{digits}f}".replace(".", ",")
-
-def proportion_ci(successes, total, z=1.96):
-    if total == 0: return 0, 0, 0
-    p = successes / total
-    se = math.sqrt(p * (1 - p) / total)
-    return p, max(0, p - z * se), min(1, p + z * se)
-
-def difference_ci(successes_a, total_a, successes_b, total_b, z=1.96):
-    if total_a == 0 or total_b == 0: return 0, 0, 0, 0
-    p_a = successes_a / total_a
-    p_b = successes_b / total_b
-    diff = p_a - p_b
-    se = math.sqrt(p_a * (1 - p_a) / total_a + p_b * (1 - p_b) / total_b)
-    z_stat = diff / se if se > 0 else 0
-    return diff, diff - z * se, diff + z * se, z_stat
-
-# --- Carregamento de Dados ---
-@st.cache_data(show_spinner=False)
-def load_registros(columns=None):
-    df = pd.read_csv(DATA_DIR / "registros_limpo.csv", sep=";", usecols=columns, low_memory=False)
-    for col in ["ano_fato", "mes_numerico_fato", "hora_fato"]:
-        if col in df.columns: df[col] = pd.to_numeric(df[col], errors="coerce")
-    if "data_fato" in df.columns: df["data_fato"] = pd.to_datetime(df["data_fato"], errors="coerce")
-    return df
-
-@st.cache_data(show_spinner=False)
-def load_vitimas():
-    path_semi = DATA_DIR / "vitimas_limpo2.csv"
-    df = pd.read_csv(path_semi, sep=";", low_memory=False) if path_semi.exists() else pd.read_csv(DATA_DIR / "vitimas_limpo.csv", sep=",", low_memory=False)
-    unnamed = [c for c in df.columns if c.lower().startswith("unnamed") or c == ""]
-    if unnamed: df = df.drop(columns=unnamed)
-    df["valor_idade_aparente"] = pd.to_numeric(df["valor_idade_aparente"], errors="coerce")
-    df["grave_ou_fatal"] = df["condicao_fisica_descricao"].isin(["GRAVES OU INCONSCIENTE", "FATAL"]).astype(int)
-    return df
-
-@st.cache_data(show_spinner=False)
-def load_condicoes(): return pd.read_csv(DATA_DIR / "condicoes_limpa.csv", sep=";", low_memory=False)
-
-@st.cache_data(show_spinner=False)
-def load_via(): return pd.read_csv(DATA_DIR / "via_limpo.csv", sep=";", low_memory=False)
-
-@st.cache_data(show_spinner=False)
-def load_vehicle_flags():
-    motos = {"MOTOCICLETA", "MOTONETA", "CICLOMOTOR"}
-    pesados = {"CAMINHAO", "ONIBUS", "MICROONIBUS"}
-    parts = []
-    for chunk in pd.read_csv(DATA_DIR / "veiculos_limpo.csv", sep=";", usecols=["numero_ocorrencia_associado", "tipo_veiculo_descricao_longa"], chunksize=500_000, low_memory=False):
-        tipo = chunk["tipo_veiculo_descricao_longa"].fillna("").str.upper()
-        flags = pd.DataFrame({
-            "numero_ocorrencia_associado": chunk["numero_ocorrencia_associado"], 
-            "envolve_moto": tipo.isin(motos).astype(int), 
-            "envolve_pesado": tipo.isin(pesados).astype(int)
-        })
-        parts.append(flags.groupby("numero_ocorrencia_associado", as_index=False).max())
-    return pd.concat(parts, ignore_index=True).groupby("numero_ocorrencia_associado", as_index=False).max()
 
 # --- Páginas ---
 def page_intro():
     st.markdown('<p class="main-header">Acidentes de Trânsito em Belo Horizonte</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Dashboard Analítico - Introdução à Ciência de Dados</p>', unsafe_allow_html=True)
     
+    st.write("""
+        Bem-vindo ao dashboard interativo do nosso estudo sobre acidentes de trânsito.
+        Este projeto integra diferentes bases públicas para extrair padrões estatísticos reais sobre 
+        letalidade, sazonalidade e fatores de risco no trânsito da capital mineira.
+    """)
+    
     st.divider()
     
     col1, col2, col3, col4 = st.columns(4)
-    with col1: st.metric("Registros Processados", format_int(1040217), delta="2012 a 2025", delta_color="off")
-    with col2: st.metric("Vítimas Analisadas", format_int(182739))
-    with col3: st.metric("Condições da Via", format_int(179492))
+    with col1: st.metric("Registros Processados", "1.040.217", delta="2012 a 2025", delta_color="off")
+    with col2: st.metric("Vítimas Analisadas", "182.739")
+    with col3: st.metric("Condições da Via", "179.492")
     with col4: st.metric("Veículos Envolvidos", "6.5M+")
     
     st.divider()
@@ -128,6 +64,7 @@ def page_intro():
 
 def page_tratamento():
     st.title("🛠️ Tratamento das Bases")
+    st.markdown("Esta seção detalha o fluxo de limpeza e padronização dos dados utilizados para cada uma das perguntas de pesquisa, conforme os scripts do projeto.")
 
     tab1, tab2, tab3, tab4 = st.tabs(["P1: Vítimas", "P2: Ocorrências Temporais", "P3: Veículos", "P4: Condições da Via"])
 
@@ -196,7 +133,7 @@ def page_pergunta_1():
     tab1, tab2, tab3 = st.tabs(["📊 Exploração", "⚖️ Testes e IC", "💡 Conclusões"])
     
     with tab1:
-        st.write("Visualização da proporção de vítimas graves ou fatais por perfil.")
+        st.write("Visualização da proporção de vítimas graves ou fatais por perfil, conforme apurado na limpeza do grupo (removidos ignorados e nulos).")
         
         sexo = pd.DataFrame({"Sexo": ["Homens", "Mulheres"], "Taxa": [0.0904, 0.0702]})
         cor = pd.DataFrame({"Cor/Raça": ["Negra", "Preto", "Parda", "Branca"], "Taxa": [0.0972, 0.0860, 0.0855, 0.0797]})
@@ -228,97 +165,118 @@ def page_pergunta_1():
         **H1:** A proporção é maior.
         """)
         
-        sucessos_perfil, total_perfil = 1127, 13815
-        sucessos_outros, total_outros = 6902, 80557
-        
         colA, colB, colC = st.columns(3)
-        colA.metric("Homens pardos 18-25 (Graves/Total)", f"{format_int(sucessos_perfil)} / {format_int(total_perfil)}")
+        colA.metric("Homens pardos 18-25 (Graves/Total)", "1.127 / 13.815")
         colB.metric("Taxa Observada (Grupo)", "8,16%")
         colC.metric("Taxa Demais Perfis", "8,57%")
         
         st.info("**Estatística Z:** -1.5960 | **p-valor (unilateral):** 0.9448")
-        st.warning("Não rejeitamos a Hipótese Nula (H0). O p-valor ficou bem acima de 5%. A proporção observada no grupo de interesse ficou abaixo da dos demais perfis.")
+        st.warning("A estatística z resultou em −1,5960 e o p-valor em 0,9448, bem acima do limiar de 5%. A hipótese nula não é rejeitada. Logo a proporção observada no grupo de interesse ficou abaixo da dos demais perfis, contrariando a hipótese.")
 
     with tab3:
         st.success("""
-        **Conclusão:**
-        Jovens concentram mais ocorrências, mas não os desfechos mais graves. E como observado esse padrão aparece nas faixas etárias mais altas, o que faz sentido: seres humanos mais jovens concentram mais ocorrências, porém o padrão de letalidade aparece nas faixas etárias mais altas. E isso também faz sentido, pessoas mais velhas toleram menos o trauma e se recuperam com mais dificuldade. A distinção importa porque volume e gravidade não andam juntos. Um grupo pode dominar os registros por estar mais exposto, enquanto outro, menos frequente, converte a mesma ocorrência em consequência mais séria. Ignorar essa diferença distorce tanto a leitura dos dados quanto as prioridades de intervenção.
+        **Conclusão**
+        
+        Jovens concentram mais ocorrências, mas não os desfechos mais graves. E como observado esse padrão aparece nas faixas etárias mais altas, o que faz sentido: seres humanos mais jovens concentram mais ocorrências, porém o padrão de letalidade aparece nas faixas etárias mais altas. E isso também faz sentido, pessoas mais velhas toleram menos o trauma e se recuperam com mais dificuldade.
+        
+        A distinção importa porque volume e gravidade não andam juntos. Um grupo pode dominar os registros por estar mais exposto, enquanto outro, menos frequente, converte a mesma ocorrência em consequência mais séria. Ignorar essa diferença distorce tanto a leitura dos dados quanto as prioridades de intervenção.
         """)
 
 def page_pergunta_2():
     st.title("⏳ P2: Distribuição Temporal")
     
-    registros = load_registros(columns=["numero_ocorrencia_associado", "ano_fato", "mes_numerico_fato", "data_fato", "dia_da_semana", "hora_fato"]).dropna()
-    for c in ["ano_fato", "mes_numerico_fato", "hora_fato"]: registros[c] = registros[c].astype(int)
+    # Dados hardcoded agregados
+    hora_dados = pd.DataFrame({
+        "Hora": [f"{i:02d}h" for i in range(24)],
+        "Ocorrências": [10884, 7225, 5312, 4420, 4382, 6508, 21447, 52467, 57856, 57074, 57848, 60571, 62267, 64704, 68664, 70678, 73835, 78870, 81402, 68092, 48086, 33595, 26263, 17767]
+    })
     
-    hora = registros.groupby("hora_fato").size().reset_index(name="ocorrencias")
+    semana_dados = pd.DataFrame({
+        "Dia da Semana": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+        "Média Diária": [220.9, 215.9, 219.0, 216.0, 241.5, 183.8, 126.7]
+    })
     
-    dias_semana = registros[["data_fato", "dia_da_semana"]].drop_duplicates().groupby("dia_da_semana").size()
-    semana = (registros.groupby("dia_da_semana").size() / dias_semana).reset_index(name="media_diaria")
-    semana["ordem"] = semana["dia_da_semana"].map({d: i for i, d in enumerate(WEEKDAY_ORDER)})
-    semana["dia"] = semana["dia_da_semana"].map(WEEKDAY_LABELS)
-    semana = semana.sort_values("ordem")
+    mes_dados = pd.DataFrame({
+        "Mês": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        "Média Diária": [169.9, 204.5, 205.3, 195.0, 199.5, 200.6, 197.2, 211.7, 214.1, 213.3, 217.5, 212.8]
+    })
+    
+    ano_dados = pd.DataFrame({
+        "Ano": list(range(2012, 2026)),
+        "Ocorrências": [77077, 77096, 76933, 72944, 69263, 73158, 72497, 79843, 58257, 61828, 69112, 79047, 84548, 88614]
+    })
     
     tab1, tab2, tab3 = st.tabs(["📈 Análise Exploratória", "⚖️ Testes e IC", "💡 Conclusões"])
     
     with tab1:
-        st.write("Agrupamos os acidentes por hora e dia da semana. Usamos **médias diárias** para evitar vieses de calendário.")
+        st.write("Agrupamos os acidentes por hora, dia da semana e mês. Usamos **médias diárias** para evitar vieses de calendário.")
+        
         col1, col2 = st.columns(2)
         with col1:
-            fig1 = px.bar(hora, x="hora_fato", y="ocorrencias", title="Volume por Hora (Pico em Vermelho)", template="plotly_white")
+            fig1 = px.bar(hora_dados, x="Hora", y="Ocorrências", title="Volume por Hora (Pico em Vermelho)", template="plotly_white")
             fig1.add_vrect(x0=16.5, x1=19.5, fillcolor="red", opacity=0.15, line_width=0)
             st.plotly_chart(fig1, use_container_width=True)
+            
+            fig3 = px.bar(mes_dados, x="Mês", y="Média Diária", title="Média Diária por Mês", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[2]])
+            st.plotly_chart(fig3, use_container_width=True)
+            
         with col2:
-            fig2 = px.bar(semana, x="dia", y="media_diaria", title="Média Diária por Dia da Semana", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[2]])
+            fig2 = px.bar(semana_dados, x="Dia da Semana", y="Média Diária", title="Média Diária por Dia da Semana", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[1]])
             st.plotly_chart(fig2, use_container_width=True)
+            
+            fig4 = px.line(ano_dados, x="Ano", y="Ocorrências", markers=True, title="Série Anual de Acidentes", template="plotly_white", color_discrete_sequence=[COLOR_PALETTE[3]])
+            st.plotly_chart(fig4, use_container_width=True)
 
     with tab2:
         st.subheader("Validação Estatística das Hipóteses")
-        total = len(registros)
-        rush = registros["hora_fato"].between(17, 19).sum()
-        p_rush, rush_low, rush_high = proportion_ci(rush, total)
-        
-        weekend = registros["dia_da_semana"].isin(["SABADO", "DOMINGO"])
-        night = registros["hora_fato"].between(0, 5)
-        weekend_night = (weekend & night).sum()
-        weekday_night = ((~weekend) & night).sum()
-        diff, diff_low, diff_high, z_stat_mad = difference_ci(weekend_night, weekend.sum(), weekday_night, (~weekend).sum())
-        
         colA, colB = st.columns(2)
         with colA:
-            st.info(f"""
-            **Teste 1: Horário de Pico (17h-19h)**
-            * **H0:** Proporção uniforme (esperado 12,50%).
-            * **H1:** Proporção > 12,50%.
-            * **Resultado:** Observado **{format_pct(p_rush)}**.
-            * **IC 95%:** [{format_pct(rush_low)} - {format_pct(rush_high)}].
-            * **Conclusão:** Rejeitamos H0 ($p < 0.001$). Há concentração estatisticamente relevante.
+            st.info("""
+            **1. Horário de pico de 17h a 19h**
+            * **H0:** Se os acidentes fossem distribuídos uniformemente ao longo do dia, a faixa de 17h a 19h teria 12,5% dos acidentes (p0 = 0,125).
+            * **H1:** A proporção de acidentes entre 17h e 19h é significativamente maior que 12,5%.
+            * **Resultado:** A proporção observada foi de **21,95%**, com um Intervalo de Confiança (IC) de 95% entre **[21,87%, 22,03%]**.
+            * **Conclusão:** Como o limite inferior do IC é superior a 12,5% e o p-valor resultante é extremamente próximo de zero (p < 0,001), rejeitamos a hipótese nula. Conclui-se que há uma concentração estatisticamente relevante de acidentes no horário de saída do trabalho.
             """)
         with colB:
-            st.warning(f"""
-            **Teste 2: Madrugada no Fim de Semana (00h-05h)**
-            * **H0:** Proporção igual em dias úteis e fds.
-            * **H1:** Proporção é maior nos fins de semana.
-            * **Diferença:** **{format_pct(diff)}** a mais na madrugada do final de semana.
-            * **IC 95%:** [{format_pct(diff_low)} - {format_pct(diff_high)}].
-            * **Conclusão:** Rejeitamos H0 ($p < 0.001$). Madrugadas de fds são proporcionalmente mais perigosas.
+            st.warning("""
+            **2. Madrugada de fim de semana**
+            * **H0:** A proporção de acidentes entre 00h e 05h é igual em fins de semana e dias úteis.
+            * **H1:** A proporção de acidentes entre 00h e 05h é maior nos fins de semana.
+            * **Resultado:** Nos fins de semana, a proporção foi **8,78%**; nos dias úteis, foi **2,31%**. A diferença observada foi de **6,47** pontos percentuais, com um IC de 95% para a diferença entre **[6,35%, 6,59%]**.
+            * **Conclusão:** Como o intervalo não inclui o valor zero e o p-valor é significativamente menor que alpha, rejeitamos a hipótese nula. Concluímos que a madrugada de fim de semana apresenta uma vulnerabilidade temporal distinta em relação aos dias úteis.
             """)
 
     with tab3:
         st.success("""
-        **Conclusões da Pergunta 2:**
-        A distribuição não é aleatória no tempo. O volume cresce fortemente no fim da tarde, na saída do trabalho (17h a 19h). A sexta-feira é o dia com maior média diária absoluta. No entanto, embora o fim de semana tenha um volume total menor de acidentes, a madrugada de fim de semana possui um peso de gravidade proporcional extremamente alto em comparação com dias úteis.
+        **Resultados da análise exploratória:**
+        
+        Foram analisadas um pouco mais de um milhão de ocorrências entre 2012 e 2025. Não houve ausência nas principais variáveis temporais usadas na análise.
+        
+        O pico isolado ocorre às 18h, com 81.402 ocorrências. A faixa de 17h a 19h concentra 228.364 acidentes, o equivalente a 21,95% de todos os registros. Se os acidentes fossem uniformes ao longo das 24 horas, essa faixa de 3 horas deveria concentrar apenas 12,50% dos casos.
+        
+        A sexta-feira apresenta a maior média diária, com aproximadamente 241,5 acidentes por dia. O domingo apresenta a menor média diária, com aproximadamente 126,7 acidentes por dia.
+        
+        A madrugada de fim de semana também se destacou. Considerando madrugada como o intervalo de 00h a 05h, sábados e domingos apresentaram 8,78% dos acidentes nesse período, enquanto os dias úteis apresentaram 2,31%.
+        
+        Na análise mensal, o menor nível ocorreu em janeiro, com cerca de 169,9 acidentes por dia, e o maior em novembro, com cerca de 217,5 acidentes por dia. Isso sugere maior volume de acidentes no segundo semestre.
+        
+        Na série anual, eh interessante notar uma queda de 2019 para 2020, provavelmente associada à redução de circulação durante a pandemia de COVID-19.
         """)
 
 def page_pergunta_3():
     st.title("🚛 P3: Tipo de Veículo vs Severidade")
     
-    tab1, tab2, tab3 = st.tabs(["📊 Análise Geral", "⚖️ Testes (A/B e Bootstrap)", "💡 Conclusões"])
+    tab1, tab2, tab3 = st.tabs(["📊 Análise Geral", "⚖️ Testes Específicos (A/B e Bootstrap)", "💡 Conclusões"])
     with tab1:
         st.write("Análise da relação entre configuração veicular (porte pesado e motos) e a presença de vítimas graves ou fatais.")
-        st.write("O grupo uniu as bases de veículos e de vítimas e agregou veículos como 'PESADO' e 'NÃO PESADO', separando-se condutores e pedestres para mensurar o impacto das colisões.")
-        
         st.info("O agrupamento identificou veículos de grande massa (Ônibus, Micro-ônibus e Caminhões) versus demais veículos, e testou a hipótese do impacto ser pior com veículos pesados e com motocicletas.")
+        
+        grupos = pd.DataFrame({
+            "Envolvimento": ["Pesados (Geral)", "Pesados (Pedestres)", "Motos (Condutores/Passageiros)"],
+            "Diferença Observada Média": ["Positiva (+)", "Positiva (++)", "Negativa (-)"]
+        })
+        st.table(grupos)
 
     with tab2:
         st.subheader("Testes de Hipótese (Diferença nas Taxas Médias de Gravidade)")
@@ -327,30 +285,35 @@ def page_pergunta_3():
         with colA:
             st.info("""
             **1. Veículos Pesados (Pedestres)**  
-            * **H0:** Acidentes com pesados e não pesados têm taxas iguais de vítimas em estado grave.  
-            * **H1:** Pesados possuem maiores proporções.  
-            * **Resultado:** Diferença média observada é *positiva*.  
-            * **Conclusão:** Rejeitamos H0. A hipótese alternativa é verdadeira, pesados são piores, especialmente para pedestres desprotegidos.
+            * **H0:** Acidentes que envolvem veículos pesados e não pesados tendem a, em média, possuir iguais proporções de vítimas pedestres em estado grave.  
+            * **HA:** Acidentes que envolvem veículos pesados tendem a, em média, possuir maiores proporções de vítimas pedestres em estado grave do que os demais tipos de veículo.  
+            * **Resultado:** Com esse teste, nossa hipótese nula pode ser rejeitada, pois ela não pertence ao IC mostrado. A diferença média observada é positiva, o que nos permite tomar a hipótese alternativa como verdadeira.
             """)
         with colB:
             st.warning("""
             **2. Motos (Condutores e Passageiros)**  
-            * **H0:** Acidentes com motos ou outros veículos têm taxas iguais.  
-            * **H1:** Motos possuem maior proporção de feridos graves.  
-            * **Resultado:** A diferença média observada no Bootstrap foi *negativa*.  
-            * **Conclusão:** Rejeitamos H0, porém a média menor *contraria a H1*. Em média, as taxas de ocorrências exclusivas de motos tenderam a não ser superiores que o grupo de controle (veículos não motos).
+            * **H0:** Acidentes que envolvem motos e não motos tendem a, em média, possuir iguais proporções de vítimas condutoras ou passageiras em estado grave.  
+            * **HA:** Acidentes que envolvem motos tendem a, em média, possuir maiores proporções de vítimas condutoras ou passageiras em estado grave do que os demais tipos de veículo.  
+            * **Resultado:** A hipótese nula é rejeitada, pois ela não pertence ao IC. Todavia, a diferença média observada é negativa, o que não está de acordo com a hipótese alternativa, pois, para tanto, a média devia ser positiva. Acidentes exclusivos de motos e suas vítimas possuem, em média, menores taxas em estado grave, quando comparados a veículos não motos.
             """)
         with colC:
             st.success("""
             **Uso do Bootstrap**  
-            Para a comparação da diferença entre proporções de vítimas pesadas e não pesadas, foi construída uma distribuição com 5.000 subamostras.  
-            Os limites de 2,5% e 97,5% da distribuição do Bootstrap excluíram o zero perfeitamente (Hipótese Nula).
+            Para a comparação da diferença entre proporções de vítimas pesadas e não pesadas, foi construída uma distribuição Bootstrap de 5.000 subamostras.  
+            Os limites de 2,5% e 97,5% da distribuição do Bootstrap excluíram o zero (Hipótese Nula), confirmando estatisticamente as observações com um alto rigor de amostragem.
             """)
 
     with tab3:
         st.success("""
         **Conclusões:**
-        Com os resultados, foi possível concluir que os acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres. Ainda, vale ressaltar que não foi possível concluir que, em acidentes envolvendo condutores ou passageiros, as motos tendem a possuir maiores proporções médias deles em estado grave se comparado a veículos que não são motos. O resultado para veículos pesados condisse com nossa suposição, uma vez que, fisicamente, um corpo acelerado com maior massa produz maior força sobre um objeto. Por outro lado, o resultado para motos não condisse com o esperado. Parece, então, que o fator porte do veículo possui maior associação com a maior proporção média de vítimas em estado grave.
+        
+        Com os resultados, foi possível concluir que os acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres. Ainda, vale ressaltar que não foi possível concluir que, em acidentes envolvendo condutores ou passageiros, as motos tendem a possuir maiores proporções médias deles em estado grave se comparado a veículos que não são motos.
+
+        O resultado para veículos pesados condisse com nossa suposição, uma vez que, fisicamente, um corpo acelerado com maior massa produz maior força sobre um objeto (nesse caso, sendo o objeto a vítima ou um veículo que a contém). Não somente, o resultado de que, analisando as vítimas pedestres, a diferença entre veículos pesados e não pesados aumenta faz sentido, pois, estando a vítima desprotegida, como toda a força vai direto para ela e não é dissipada em nenhum outro obstáculo, espera-se que ocorram mais casos de vítimas em estado grave.
+
+        Por outro lado, o resultado para motos não condisse com o esperado. A suposição era a de que, pelo fato de motos possuírem maior velocidade média e maior exposição do usuário, a taxa média de condutores e passageiros envolvidos em acidentes com motos seria maior quando comparado com os veículos que não são motos. Todavia, o resultado não foi o desejado, e não foi possível concluir a hipótese alternativa.
+
+        Parece, então, que o fator porte do veículo possui maior associação com a maior proporção média de vítimas em estado grave.
         """)
 
 def page_pergunta_4():
@@ -359,10 +322,26 @@ def page_pergunta_4():
     tab1, tab2, tab3 = st.tabs(["📊 Análise Exploratória", "⚖️ Testes de Hipótese (A/B)", "💡 Conclusões"])
     with tab1:
         st.write("A análise focou em três vertentes da infraestrutura em Belo Horizonte: Capacidade da Via, Luminosidade e Sinalização.")
+        
+        pav_df = pd.DataFrame({"Tipo de Pavimento": ["Asfalto", "Não Informado", "Calçamento", "Concreto", "Outros", "Terra"], "Porcentagem": [95.59, 1.97, 1.17, 0.66, 0.53, 0.04]})
+        via_df = pd.DataFrame({"Tipo de Via": ["Pista Simples", "Pista Dupla", "Pista Múltipla", "Não Informado"], "Porcentagem": [52.87, 26.28, 20.20, 0.66]})
+        sin_df = pd.DataFrame({"Sinalização": ["Boa", "Não Há", "Em Más Condições", "Não Informado", "Irregular"], "Porcentagem": [74.63, 16.83, 3.56, 3.20, 1.78]})
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            fig1 = px.pie(pav_df.head(3), values="Porcentagem", names="Tipo de Pavimento", title="Pavimento (Asfalto é absoluto)", template="plotly_white")
+            st.plotly_chart(fig1, use_container_width=True)
+        with col2:
+            fig2 = px.pie(via_df.head(3), values="Porcentagem", names="Tipo de Via", title="Tipo da Pista", template="plotly_white")
+            st.plotly_chart(fig2, use_container_width=True)
+        with col3:
+            fig3 = px.pie(sin_df.head(3), values="Porcentagem", names="Sinalização", title="Sinalização", template="plotly_white")
+            st.plotly_chart(fig3, use_container_width=True)
+            
         st.markdown("""
-        - A maioria dos acidentes ocorre no asfalto, o que pode dar uma "falsa sensação de segurança" (Falta de Atenção).
-        - A sinalização de trânsito constou como 'BOA' em mais de 60% dos casos.
-        - Pistas de mão simples representam maioria de colisões frontais ou acidentes severos.
+        1. A maioria esmagadora dos acidentes acontecem no asfalto, podendo levar a insights sobre a falsa sensação de segurança.
+        2. Outra maioria exorbitante é de acidentes em pistas simples, o que nos leva a possivelmente entender como essas pistas levam a mais colisões frontais em ultrapassagens.
+        3. A sinalização é predominantemente boa, compondo mais de 60% dos casos de acidentes. Isso indica que a falta de sinalização não é uma das causas primárias para os acidentes.
         """)
 
     with tab2:
@@ -371,137 +350,80 @@ def page_pergunta_4():
         colA, colB, colC = st.columns(3)
         with colA:
             st.info("""
-            **1. Tipo da Via (Capacidade)**  
-            * **H0:** O tipo de via não afeta a gravidade.  
-            * **Resultado:** Diferença clara entre via simples e vias não simples.  
-            * **p-valor/IC:** Proporção de diferença indicou significância estatística (p-valor < 5%).  
-            * **Conclusão:** Rejeitamos H0. Pistas simples tornam os acidentes mais propensos à severidade (ex: choques frontais).
+            **1. Tipo da Via (Simples vs Não Simples)**  
+            * **H0:** A pavimentação e tipo da via não têm influência na gravidade.  
+            * **Resultado:** Ao comparar a diferença entre os grupos “via simples” e “via não simples” na curva normal, tornou-se claro uma proporção de 5.225% com intervalo de confiança de 95%.  
+            * **Conclusão:** Esse intervalo exclui a hipótese nula, logo a rejeitamos. A pavimentação da via foi descartada devido a discrepância enorme entre os tamanhos dos grupos.
             """)
         with colB:
             st.warning("""
-            **2. Luminosidade (Dia vs Má iluminação)**  
-            * **H0:** Iluminação não afeta a gravidade.  
-            * **Resultado:** p-valor atingiu a marca de 21.7%.  
-            * **Conclusão:** Como 21.7% > 5%, não foi possível rejeitar H0. Diferenças de iluminação sozinhas podem ser fruto do acaso.
+            **2. Iluminação (Boa vs Não Há)**  
+            * **H0:** A iluminação não têm influência na gravidade.  
+            * **Resultado:** Ao comparar a diferença, tornou-se claro uma proporção de 21.7%, com intervalo de confiança de 95%.  
+            * **Conclusão:** Esse valor está muito acima da marca de 5%, e, portanto, não foi possível rejeitar a hipótese nula.
             """)
         with colC:
             st.error("""
-            **3. Sinalização (Boa vs Não Há/Ruim)**  
-            * **H0:** A sinalização não afeta a gravidade.  
-            * **Resultado:** A diferença nos testes A/B entre os dois grupos rodou muito próxima do zero.  
-            * **Conclusão:** O IC engloba o zero. Não rejeitamos a H0 de que a sinalização isoladamente afeta a gravidade do acidente em BH.
+            **3. Sinalização (Há vs Não Há)**  
+            * **H0:** A sinalização não têm influência na gravidade.  
+            * **Resultado:** Ao comparar a diferença entre os grupos, percebe-se que essa diferença girava em torno de 0, ou seja, inclui a hipótese nula.  
+            * **Conclusão:** Devido a isso não foi possível rejeitar a hipótese nula de que a sinalização isoladamente afeta a gravidade do acidente em BH.
             """)
 
     with tab3:
         st.success("""
         **Conclusões:**
-        Os resultados determinam que o **tipo de via (pista simples)** é a variável de maior impacto na gravidade do acidente, permitindo rejeitar a hipótese nula com facilidade.
-        Quanto às variáveis de iluminação e sinalização, não houve evidência matemática na amostra macro de BH para associá-las de forma conclusiva com letalidade, possivelmente devido à infraestrutura base da capital ou ao fato de condutores ajustarem a velocidade na escuridão.
+        Os resultados determinam que o tipo de via é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula. As condições das vias simples tornam acidentes graves mais propensos.
+        
+        Quanto as variáveis de iluminação e sinalização, não foi observada evidência forte o suficiente para rejeitar a hipotese nula. Isso sugere que, em Belo Horizonte, acidentes tendem a independer da iluminação e sinalização, tendendo as duas a no geral serem boas.
         """)
 
-def page_modelos():
-    st.title("🤖 Modelos de Machine Learning")
-    
-    # tab1, tab2 = st.tabs(["📈 Regressão (Volume Mensal)", "🔮 Classificação (Risco Grave/Fatal)"])
-    
-    # with tab1:
-    #     from sklearn.linear_model import LinearRegression
-    #     from sklearn.metrics import mean_absolute_error, r2_score
-        
-    #     st.write("Criamos um modelo para tentar prever o número absoluto de acidentes em um mês, usando o Tempo (tendência) e o Mês (Sazonalidade).")
-        
-    #     reg_df = load_registros(columns=["ano_fato", "mes_numerico_fato"]).dropna().astype(int)
-    #     df_mensal = reg_df.groupby(["ano_fato", "mes_numerico_fato"]).size().reset_index(name="acidentes").sort_values(["ano_fato", "mes_numerico_fato"]).reset_index(drop=True)
-    #     df_mensal["tempo"] = np.arange(1, len(df_mensal) + 1)
-    #     df_mensal["data"] = pd.to_datetime(dict(year=df_mensal["ano_fato"], month=df_mensal["mes_numerico_fato"], day=1))
-        
-    #     X = pd.concat([df_mensal[["tempo"]], pd.get_dummies(df_mensal["mes_numerico_fato"], prefix="mes", drop_first=True)], axis=1)
-    #     y = df_mensal["acidentes"]
-        
-    #     train_size = max(len(df_mensal) - 24, 1)
-    #     X_train, X_test, y_train, y_test = X.iloc[:train_size], X.iloc[train_size:], y.iloc[:train_size], y.iloc[train_size:]
-        
-    #     model = LinearRegression().fit(X_train, y_train)
-    #     pred = model.predict(X_test)
-        
-    #     col1, col2, col3 = st.columns(3)
-    #     col1.metric("MAE (Erro Médio Absoluto)", format_float(mean_absolute_error(y_test, pred), 1))
-    #     col2.metric("R² Teste", format_float(r2_score(y_test, pred), 2))
-        
-    #     fig = go.Figure()
-    #     fig.add_trace(go.Scatter(x=df_mensal["data"], y=df_mensal["acidentes"], name="Real", line=dict(color="gray")))
-    #     fig.add_trace(go.Scatter(x=df_mensal.iloc[train_size:]["data"], y=pred, name="Previsto", line=dict(color="red", dash="dash")))
-    #     fig.update_layout(title="Regressão Linear Múltipla (Treino/Teste)", template="plotly_white")
-    #     st.plotly_chart(fig, use_container_width=True)
-        
-    #     with st.expander("Ver Importância das Variáveis (Coeficientes)"):
-    #         coef_df = pd.DataFrame({"Variável": X.columns, "Coeficiente": model.coef_}).sort_values("Coeficiente")
-    #         st.dataframe(coef_df, use_container_width=True)
-
-    # with tab2:
-    #     from sklearn.compose import ColumnTransformer
-    #     from sklearn.impute import SimpleImputer
-    #     from sklearn.linear_model import LogisticRegression
-    #     from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-    #     from sklearn.model_selection import train_test_split
-    #     from sklearn.pipeline import Pipeline
-    #     from sklearn.preprocessing import OneHotEncoder, StandardScaler
-        
-    #     st.write("Regressão Logística para classificar se a vítima sairá com lesões Graves/Fatais baseado no contexto do choque.")
-        
-    #     df_clf = load_vitimas()[["numero_ocorrencia_associado", "valor_idade_aparente", "codigo_sexo", "grave_ou_fatal", "condicao_fisica_descricao"]].dropna(subset=["grave_ou_fatal"])
-    #     df_clf = df_clf[~df_clf["condicao_fisica_descricao"].eq("GRAU DA LESAO - IGNORADO")].sample(50000, random_state=42) # Amostra para rodar rápido
-        
-    #     reg = load_registros(columns=["numero_ocorrencia_associado", "hora_fato", "dia_da_semana"])
-    #     df_ml = df_clf.merge(reg, on="numero_ocorrencia_associado", how="left").dropna()
-        
-    #     X_clf = df_ml[["valor_idade_aparente", "hora_fato", "codigo_sexo", "dia_da_semana"]]
-    #     y_clf = df_ml["grave_ou_fatal"].astype(int)
-        
-    #     X_tr, X_te, y_tr, y_te = train_test_split(X_clf, y_clf, test_size=0.25, random_state=42, stratify=y_clf)
-        
-    #     preprocessor = ColumnTransformer(transformers=[
-    #         ("num", Pipeline([("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]), ["valor_idade_aparente", "hora_fato"]),
-    #         ("cat", Pipeline([("imputer", SimpleImputer(strategy="most_frequent")), ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False))]), ["codigo_sexo", "dia_da_semana"])
-    #     ])
-        
-    #     clf = Pipeline(steps=[("prep", preprocessor), ("logreg", LogisticRegression(class_weight="balanced", max_iter=500))])
-    #     clf.fit(X_tr, y_tr)
-    #     y_pred = clf.predict(X_te)
-        
-    #     cA, cB, cC, cD = st.columns(4)
-    #     cA.metric("Acurácia", format_pct(accuracy_score(y_te, y_pred)))
-    #     cB.metric("Precisão", format_pct(precision_score(y_te, y_pred, zero_division=0)))
-    #     cC.metric("Recall (Sensibilidade)", format_pct(recall_score(y_te, y_pred, zero_division=0)))
-    #     cD.metric("F1-Score", format_pct(f1_score(y_te, y_pred, zero_division=0)))
-        
-    #     st.info("Como a base é desbalanceada (poucos acidentes graves em relação ao total), usamos `class_weight='balanced'`. O Recall alto mostra que o modelo consegue identificar boa parte dos acidentes graves, mesmo que erre alguns leves (baixa precisão).")
-
 def page_conclusao():
-    st.title("🎯 Conclusões da Pesquisa")
-    st.markdown("""
-    ### Síntese dos Achados
-    - **P1 Demografia:** O grupo demográfico influencia fortemente a proporção de letalidade, destacando-se uma vulnerabilidade extrema nas faixas etárias de idosos. A hipótese restrita a homens jovens pardos foi rejeitada (z = -1.59, p = 0.94).
-    - **P2 Temporalidade:** O volume absoluto foca na saída do trabalho (18h) em dias úteis, mas a madrugada do final de semana carrega uma diferença significativa no risco de letalidade em acidentes.
-    - **P3 Veículos:** A inércia domina o fator de gravidade: acidentes cruzando pedestres e veículos pesados são exponencialmente mais letais. O modelo A/B demonstrou significância estatística que o peso veicular afeta as vítimas, principalmente pedestres.
-    - **P4 Infraestrutura:** Pistas simples indicam maior risco severo de batidas. Por outro lado, iluminação e sinalização deficiente sozinhas não foram suficientes para sustentar a rejeição da hipótese nula na base como um todo.
+    st.title("🎯 Conclusões e Modelos da Pesquisa")
     
-    """)
+    tab1, tab2 = st.tabs(["📌 O que aprendemos", "🤖 Proposta de Machine Learning"])
+    
+    with tab1:
+        st.markdown("""
+        ### Síntese dos Achados
+        - **P1 Demografia:** Jovens concentram mais ocorrências, mas não os desfechos mais graves. O padrão de letalidade aparece nas faixas etárias mais altas. Um grupo pode dominar os registros por estar mais exposto, enquanto outro converte a mesma ocorrência em consequência mais séria.
+        - **P2 Temporalidade:** O volume absoluto foca na saída do trabalho (18h) em dias úteis, mas a madrugada do final de semana carrega uma diferença significativa no risco proporcional de letalidade em acidentes.
+        - **P3 Veículos:** A inércia domina o fator de gravidade: acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres.
+        - **P4 Infraestrutura:** Os resultados determinam que o tipo de via (simples vs dupla/múltipla) é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula de infraestrutura.
+        """)
+        
+    with tab2:
+        st.markdown("""
+        ### Discussão: O que poderíamos treinar usando Aprendizado de Máquina?
+        O monitor apontou que temos a liberdade de aplicar classificações ou regressões que façam sentido para o contexto do trabalho. Observando as nossas conclusões estatísticas, sugerimos duas abordagens fortes de Inteligência Artificial:
+
+        #### 1. Classificador Logístico: O "Alerta" para o Samu
+        Como os Testes A/B e o Bootstrap comprovaram que Tipo de Veículo (Inércia) e Idade da Vítima (Fragilidade) são chaves estatísticas para desfechos severos, a primeira recomendação é usar um algoritmo de Classificação Binária (como Regressão Logística ou Árvore de Decisão).
+        - **Target:** `Grave_ou_Fatal` (1 ou 0).
+        - **Features:** Hora, Tipo de Veículo (Pesado = 1), Idade da Vítima.
+        - **Uso real:** O centro de despacho de ambulâncias recebe a notificação da batida e o modelo cospe: "Probabilidade de vítima grave: 82%".
+
+        #### 2. Regressão Linear Múltipla: Sazonalidade Pós-Pandemia
+        Vimos na Pergunta 2 que as séries anuais e médias mensais flutuam muito. Mas será que dá pra prever os números brutos do mês que vem?
+        - **Target:** `Quantidade de Acidentes`.
+        - **Features:** Uma variável `Tempo` sequencial para capturar crescimento da frota, e *Dummies* de `Mês` (Jan a Dez) para que o modelo entenda que Novembro é sazonalmente pior que Janeiro.
+        - **Métrica:** Avaliaria o erro absoluto médio (MAE). Serviria para o planejamento de férias da Polícia de Trânsito ou campanhas publicitárias preventivas.
+        """)
+
 # --- Roteamento ---
 PAGES = {
-    " Introdução": page_intro,
-    " Tratamento das Bases": page_tratamento,
-    " P1: Perfil Demográfico": page_pergunta_1,
-    " P2: Tempo e Sazonalidade": page_pergunta_2,
-    " P3: Veículos Envolvidos": page_pergunta_3,
-    " P4: Infraestrutura": page_pergunta_4,
-    " Modelos (Classif. & Reg.)": page_modelos,
-    " Conclusões": page_conclusao
+    "📌 Introdução": page_intro,
+    "🛠️ Tratamento das Bases": page_tratamento,
+    "👥 P1: Perfil Demográfico": page_pergunta_1,
+    "⏳ P2: Tempo e Sazonalidade": page_pergunta_2,
+    "🚛 P3: Veículos Envolvidos": page_pergunta_3,
+    "🛣️ P4: Infraestrutura": page_pergunta_4,
+    "🎯 Conclusões Finais": page_conclusao
 }
 
 st.sidebar.title("Navegação")
 selection = st.sidebar.radio("Ir para:", list(PAGES.keys()))
 st.sidebar.divider()
-st.sidebar.caption("TP de ICD")
+st.sidebar.caption("TP de ICD - UFMG | Dashboards com Streamlit e Plotly")
 
 PAGES[selection]()
