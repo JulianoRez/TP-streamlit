@@ -341,36 +341,15 @@ def page_pergunta_4():
         """)
 
 def page_conclusao():
-    st.title("Conclusões e Modelos da Pesquisa")
+    st.title("Conclusões da Pesquisa")
     
-    tab1, tab2 = st.tabs(["O que aprendemos", "Proposta de Machine Learning"])
-    
-    with tab1:
-        st.markdown("""
-        ### Síntese dos Achados
-        - **P1 Demografia:** Jovens concentram mais ocorrências, mas não os desfechos mais graves. O padrão de letalidade aparece nas faixas etárias mais altas. Um grupo pode dominar os registros por estar mais exposto, enquanto outro converte a mesma ocorrência em consequência mais séria.
-        - **P2 Temporalidade:** O volume absoluto foca na saída do trabalho (18h) em dias úteis, mas a madrugada do final de semana carrega uma diferença significativa no risco proporcional de letalidade em acidentes.
-        - **P3 Veículos:** A inércia domina o fator de gravidade: acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres.
-        - **P4 Infraestrutura:** Os resultados determinam que o tipo de via (simples vs dupla/múltipla) é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula de infraestrutura.
-        """)
-        
-    with tab2:
-        st.markdown("""
-        ### Discussão: O que poderíamos treinar usando Aprendizado de Máquina?
-        O monitor apontou que temos a liberdade de aplicar classificações ou regressões que façam sentido para o contexto do trabalho. Observando as nossas conclusões estatísticas, sugerimos duas abordagens fortes de Inteligência Artificial:
-
-        #### 1. Classificador Logístico: O "Alerta" para o Samu
-        Como os Testes A/B e o Bootstrap comprovaram que Tipo de Veículo (Inércia) e Idade da Vítima (Fragilidade) são chaves estatísticas para desfechos severos, a primeira recomendação é usar um algoritmo de Classificação Binária (como Regressão Logística ou Árvore de Decisão).
-        - **Target:** `Grave_ou_Fatal` (1 ou 0).
-        - **Features:** Hora, Tipo de Veículo (Pesado = 1), Idade da Vítima.
-        - **Uso real:** O centro de despacho de ambulâncias recebe a notificação da batida e o modelo cospe: "Probabilidade de vítima grave: 82%".
-
-        #### 2. Regressão Linear Múltipla: Sazonalidade Pós-Pandemia
-        Vimos na Pergunta 2 que as séries anuais e médias mensais flutuam muito. Mas será que dá para prever os números brutos do mês que vem?
-        - **Target:** `Quantidade de Acidentes`.
-        - **Features:** Uma variável `Tempo` sequencial para capturar crescimento da frota, e *Dummies* de `Mês` (Jan a Dez) para que o modelo entenda que Novembro é sazonalmente pior que Janeiro.
-        - **Métrica:** Avaliaria o erro absoluto médio (MAE). Serviria para o planejamento de férias da Polícia de Trânsito ou campanhas publicitárias preventivas.
-        """)
+    st.markdown("""
+    ### Síntese dos Achados
+    - **P1 Demografia:** Jovens concentram mais ocorrências, mas não os desfechos mais graves. O padrão de letalidade aparece nas faixas etárias mais altas. Um grupo pode dominar os registros por estar mais exposto, enquanto outro converte a mesma ocorrência em consequência mais séria.
+    - **P2 Temporalidade:** O volume absoluto foca na saída do trabalho (18h) em dias úteis, mas a madrugada do final de semana carrega uma diferença significativa no risco proporcional de letalidade em acidentes.
+    - **P3 Veículos:** A inércia domina o fator de gravidade: acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres.
+    - **P4 Infraestrutura:** Os resultados determinam que o tipo de via (simples vs dupla/múltipla) é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula de infraestrutura.
+    """)
 
 # --- Roteamento ---
 PAGES = {
