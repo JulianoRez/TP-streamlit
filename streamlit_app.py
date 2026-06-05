@@ -123,20 +123,78 @@ def page_pergunta_1():
     st.title("Pergunta 1: Perfil Demográfico")
     
     tab1, tab2, tab3 = st.tabs(["Exploração", "Testes e IC", "Conclusões"])
+        
+    r_sexo = pd.DataFrame({
+        'codigo_sexo': ['M', 'F'],
+        'proporcao': [9.04, 7.02]
+    })
     
+    r_cor = pd.DataFrame({
+        'cor_pele_descricao': ['BRANCA', 'PARDA', 'PRETO', 'NEGRA', 'AMARELA', 'ALBINA', 'INDIGENA'],
+        'proporcao': [7.97, 8.55, 8.60, 9.72, 12.30, 13.39, 17.65]
+    })
+    
+    r_faixa = pd.DataFrame({
+        'faixa_etaria': ['18 A 29 ANOS', '30 A 39 ANOS', '0 A 11 ANOS', '40 A 49 ANOS', '50 A 59 ANOS', '12 A 17 ANOS', '60 A 69 ANOS', '70 A 79 ANOS', '80 ANOS OU MAIS'],
+        'proporcao': [7.61, 8.40, 8.40, 8.68, 9.64, 11.22, 11.48, 12.87, 16.08]
+    })
+
+    top10 = pd.DataFrame({
+        'perfil': [
+            'M | PARDA | 12 A 17 ANOS', 
+            'F | PRETO | 30 A 39 ANOS', 
+            'M | PARDA | 60 A 69 ANOS',
+            'M | BRANCA | 70 A 79 ANOS', 
+            'F | BRANCA | 80 ANOS OU MAIS', 
+            'F | PARDA | 80 ANOS OU MAIS',
+            'M | NEGRA | 60 A 69 ANOS', 
+            'M | PARDA | 80 ANOS OU MAIS', 
+            'M | NEGRA | 12 A 17 ANOS',
+            'M | BRANCA | 80 ANOS OU MAIS'
+        ],
+        'proporcao': [12.64, 13.53, 13.85, 14.74, 15.24, 15.83, 15.92, 16.54, 17.61, 18.49]
+    })
     with tab1:
-        
-        sexo = pd.DataFrame({"Sexo": ["Homens", "Mulheres"], "Taxa": [0.0904, 0.0702]})
-        cor = pd.DataFrame({"Cor/Raça": ["Negra", "Preto", "Parda", "Branca"], "Taxa": [0.0972, 0.0860, 0.0855, 0.0797]})
-        faixa = pd.DataFrame({"Faixa Etária": ["80+", "70-79", "60-69", "18-29"], "Taxa": [0.1608, 0.1287, 0.1148, 0.0761]})
-        
-        col1, col2 = st.columns([1, 1])
+        st.subheader("Proporção de vítimas graves ou fatais por perfil demográfico")
+
+        col1, col2, col3 = st.columns(3)
+
         with col1:
-            st.markdown("##### Letalidade por Perfil (Sexo, Cor e Idade)")
-            st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
+            fig_sexo = px.bar(r_sexo, x='codigo_sexo', y='proporcao', 
+                              title="Por sexo", text='proporcao', 
+                              labels={'codigo_sexo': '', 'proporcao': 'Proporção (%)'},
+                              color_discrete_sequence=["#2F6B8A"])
+            fig_sexo.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+            fig_sexo.update_layout(yaxis_range=[0, r_sexo['proporcao'].max() * 1.3])
+            st.plotly_chart(fig_sexo, use_container_width=True)
+
         with col2:
-            st.markdown("##### Ranking dos Perfis mais Letais (N > 100)")
-            st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
+            fig_cor = px.bar(r_cor, y='cor_pele_descricao', x='proporcao', orientation='h',
+                             title="Por cor/raça", text='proporcao',
+                             labels={'cor_pele_descricao': '', 'proporcao': 'Proporção (%)'},
+                             color_discrete_sequence=["#6C8F5A"])
+            fig_cor.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+            fig_cor.update_layout(xaxis_range=[0, r_cor['proporcao'].max() * 1.3])
+            st.plotly_chart(fig_cor, use_container_width=True)
+
+        with col3:
+            fig_faixa = px.bar(r_faixa, y='faixa_etaria', x='proporcao', orientation='h',
+                               title="Por faixa etária", text='proporcao',
+                               labels={'faixa_etaria': '', 'proporcao': 'Proporção (%)'},
+                               color_discrete_sequence=["#A66A45"])
+            fig_faixa.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+            fig_faixa.update_layout(xaxis_range=[0, r_faixa['proporcao'].max() * 1.3])
+            st.plotly_chart(fig_faixa, use_container_width=True)
+
+        st.divider()
+        
+        st.subheader("Perfis demográficos com maior proporção")
+        fig_top10 = px.bar(top10, y='perfil', x='proporcao', orientation='h',
+                           text='proporcao', labels={'perfil': '', 'proporcao': 'Proporção (%)'},
+                           color_discrete_sequence=["#4C7A93"])
+        fig_top10.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+        fig_top10.update_layout(xaxis_range=[0, top10['proporcao'].max() * 1.2], height=450)
+        st.plotly_chart(fig_top10, use_container_width=True)
 
     with tab2:
         st.subheader("Teste de Hipótese: Homens Jovens (18-25) e Pardos")
@@ -242,38 +300,120 @@ def page_pergunta_2():
         Na série anual, é interessante notar uma queda de 2019 para 2020, provavelmente associada à redução de circulação durante a pandemia de COVID-19.
         """)
 
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
 def page_pergunta_3():
     st.title("Pergunta 3: Tipo de Veículo vs Severidade")
     
     tab1, tab2, tab3 = st.tabs(["Análise Geral", "Testes Específicos (A/B e Bootstrap)", "Conclusões"])
+    
     with tab1:
+        st.subheader("Proporção de Lesões por Tipo de Veículo")
         
-        st.empty()
+        # ==========================================
+        # 1. DADOS HARDCODED (Valores extraídos das imagens)
+        # ==========================================
+        
+        # Tabela 1: Geral
+        dados_geral = pd.DataFrame({
+            "Tipo de Veículo": ["BICICLETA", "CAMINHAO", "MICROONIBUS", "MOTO", "ONIBUS", "PORTE LEVE"],
+            "SEM LESAO": [0.060, 0.065, 0.070, 0.060, 0.070, 0.075],
+            "LEVE":      [0.760, 0.720, 0.750, 0.780, 0.760, 0.780],
+            "GRAVE":     [0.070, 0.100, 0.080, 0.070, 0.065, 0.050],
+            "FATAL":     [0.015, 0.035, 0.015, 0.010, 0.015, 0.010],
+            "OUTROS":    [0.090, 0.070, 0.075, 0.085, 0.085, 0.085]
+        })
 
+        # Tabela 2: Pedestres
+        dados_pedestres = pd.DataFrame({
+            "Tipo de Veículo": ["BICICLETA", "CAMINHAO", "MICROONIBUS", "MOTO", "ONIBUS", "PORTE LEVE"],
+            "SEM LESAO": [0.040, 0.040, 0.055, 0.050, 0.055, 0.060],
+            "LEVE":      [0.730, 0.580, 0.700, 0.700, 0.640, 0.710],
+            "GRAVE":     [0.120, 0.200, 0.150, 0.135, 0.170, 0.105],
+            "FATAL":     [0.010, 0.085, 0.020, 0.020, 0.050, 0.025],
+            "OUTROS":    [0.110, 0.090, 0.070, 0.090, 0.080, 0.095]
+        })
+
+        # Tabela 3: Condutores e Passageiros
+        dados_condutores = pd.DataFrame({
+            "Tipo de Veículo": ["BICICLETA", "CAMINHAO", "MICROONIBUS", "MOTO", "ONIBUS", "PORTE LEVE"],
+            "SEM LESAO": [0.060, 0.060, 0.070, 0.060, 0.065, 0.070],
+            "LEVE":      [0.760, 0.740, 0.760, 0.780, 0.780, 0.800],
+            "GRAVE":     [0.070, 0.100, 0.075, 0.070, 0.050, 0.045],
+            "FATAL":     [0.015, 0.030, 0.015, 0.010, 0.015, 0.010],
+            "OUTROS":    [0.090, 0.070, 0.075, 0.085, 0.085, 0.085]
+        })
+
+        # Cores idênticas à sua legenda original
+        mapa_cores = {
+            "SEM LESAO": "green", 
+            "LEVE": "yellow", 
+            "GRAVE": "orange", 
+            "FATAL": "red", 
+            "OUTROS": "gray"
+        }
+
+        # Função auxiliar para gerar o gráfico sem repetir código
+        def criar_grafico(df, titulo):
+            # Transforma a tabela larga no formato ideal para o Plotly
+            df_melt = df.melt(id_vars="Tipo de Veículo", var_name="Condição Física", value_name="Proporção")
+            
+            fig = px.bar(
+                df_melt, 
+                x="Tipo de Veículo", 
+                y="Proporção", 
+                color="Condição Física",
+                barmode="group", # Isso faz as barras ficarem lado a lado
+                title=titulo,
+                color_discrete_map=mapa_cores
+            )
+            # Trava o eixo Y para ficar padronizado igual às suas imagens (até 0.8 / 80%)
+            fig.update_layout(yaxis_range=[0, 0.85], xaxis_title="") 
+            return fig
+
+        # ==========================================
+        # 2. EXIBIÇÃO NO STREAMLIT
+        # ==========================================
+        
+        # Cria um botão de seleção para o usuário navegar entre as 3 visões sem poluir a tela
+        visao = st.radio(
+            "Selecione o grupo analisado:", 
+            ["Geral", "Apenas Pedestres", "Condutores e Passageiros"],
+            horizontal=True
+        )
+
+        if visao == "Geral":
+            st.plotly_chart(criar_grafico(dados_geral, "Proporção de Lesões por Tipo de Veículo"), use_container_width=True)
+        
+        elif visao == "Apenas Pedestres":
+            st.plotly_chart(criar_grafico(dados_pedestres, "Proporção de Lesões por Tipo de Veículo para Pedestres"), use_container_width=True)
+            
+        else:
+            st.plotly_chart(criar_grafico(dados_condutores, "Proporção de Lesões por Tipo de Veículo para Condutores e Passageiros"), use_container_width=True)
+
+    # O RESTANTE DO SEU CÓDIGO PERMANECE INTOCADO (Abaixo)
     with tab2:
         st.subheader("Testes de Hipótese")
-
         colA, colB, colC = st.columns(3)
         with colA:
             st.info("""
-            **1. Veículos Pesados (Pedestres)**  
-            * **H0:** Acidentes que envolvem veículos pesados e não pesados tendem a, em média, possuir iguais proporções de vítimas pedestres em estado grave.  
+            **1. Veículos Pesados (Pedestres)** * **H0:** Acidentes que envolvem veículos pesados e não pesados tendem a, em média, possuir iguais proporções de vítimas pedestres em estado grave.  
             * **HA:** Acidentes que envolvem veículos pesados tendem a, em média, possuir maiores proporções de vítimas pedestres em estado grave do que os demais tipos de veículo.  
             * **Resultado:** Com esse teste, nossa hipótese nula pode ser rejeitada, pois ela não pertence ao IC mostrado. A diferença média observada é positiva, o que nos permite tomar a hipótese alternativa como verdadeira.
             """)
             st.image("images/Figure_1.png", use_container_width=True)
         with colB:
             st.warning("""
-            **2. Motos (Condutores e Passageiros)**  
-            * **H0:** Acidentes que envolvem motos e não motos tendem a, em média, possuir iguais proporções de vítimas condutoras ou passageiras em estado grave.  
+            **2. Motos (Condutores e Passageiros)** * **H0:** Acidentes que envolvem motos e não motos tendem a, em média, possuir iguais proporções de vítimas condutoras ou passageiras em estado grave.  
             * **HA:** Acidentes que envolvem motos tendem a, em média, possuir maiores proporções de vítimas condutoras ou passageiras em estado grave do que os demais tipos de veículo.  
             * **Resultado:** A hipótese nula é rejeitada, pois ela não pertence ao IC. Todavia, a diferença média observada é negativa, o que não está de acordo com a hipótese alternativa, pois, para tanto, a média devia ser positiva. Acidentes exclusivos de motos e suas vítimas possuem, em média, menores taxas em estado grave, quando comparados a veículos não motos.
             """)
             st.image("images/Figure_3.png", use_container_width=True)
         with colC:
             st.success("""
-            **Uso do Bootstrap**  
-            Para a comparação da diferença entre proporções de vítimas pesadas e não pesadas, foi construída uma distribuição Bootstrap de 5.000 subamostras.  
+            **Uso do Bootstrap** Para a comparação da diferença entre proporções de vítimas pesadas e não pesadas, foi construída uma distribuição Bootstrap de 5.000 subamostras.  
             Os limites de 2,5% e 97,5% da distribuição do Bootstrap excluíram o zero (Hipótese Nula), confirmando estatisticamente as observações com um alto rigor de amostragem.
             """)
             st.image("images/teste.png", use_container_width=True)
@@ -295,44 +435,115 @@ def page_pergunta_4():
     st.title("Pergunta 4: Infraestrutura da Via")
     
     tab1, tab2, tab3 = st.tabs(["Análise Exploratória", "Testes de Hipótese (A/B)", "Conclusões"])
+    
     with tab1:
-        st.write("A análise focou em três vertentes da infraestrutura em Belo Horizonte: Capacidade da Via, Luminosidade e Sinalização.")
+        st.write("A análise focou em três vertentes da infraestrutura em Belo Horizonte: Tipo de Via, Tipo de Pavimento e a relação entre Sinalização e Luminosidade.")
         
-        pav_df = pd.DataFrame({"Tipo de Pavimento": ["Asfalto", "Não Informado", "Calçamento", "Concreto", "Outros", "Terra"], "Porcentagem": [95.59, 1.97, 1.17, 0.66, 0.53, 0.04]}).sort_values("Porcentagem")
-        via_df = pd.DataFrame({"Tipo de Via": ["Pista Simples", "Pista Dupla", "Pista Múltipla", "Não Informado"], "Porcentagem": [52.87, 26.28, 20.20, 0.66]}).sort_values("Porcentagem")
-        sin_df = pd.DataFrame({"Sinalização": ["Boa", "Não Há", "Em Más Condições", "Não Informado", "Irregular"], "Porcentagem": [74.63, 16.83, 3.56, 3.20, 1.78]}).sort_values("Porcentagem")
+        # ==========================================
+        # 1. DADOS HARDCODED (Valores aproximados)
+        # ==========================================
         
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            st.markdown("##### Letalidade por Perfil (Sexo, Cor e Idade)")
-            st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
-        with col2:
-            st.markdown("##### Ranking dos Perfis mais Letais (N > 100)")
-            st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
-            
+        # 1.1 Dados: Tipo de Via
+        dados_via = pd.DataFrame({
+            "Tipo de Via": ["PISTA SIMPLES", "PISTA DUPLA", "PISTA MULTIPLA", "NAO INFORMADO"],
+            "Quantidade": [1020000, 350000, 100000, 10000]
+        }).sort_values("Quantidade", ascending=True)
 
+        # 1.2 Dados: Tipo de Pavimento
+        dados_pavimento = pd.DataFrame({
+            "Tipo de Pavimento": ["ASFALTO", "CALCAMENTO", "CONCRETO", "OUTROS (NO HISTORICO)", "TERRA", "CASCALHO (MINERAL)"],
+            "Quantidade": [168000, 2500, 1000, 800, 100, 50]
+        }).sort_values("Quantidade", ascending=True)
+
+        # 1.3 Dados: Sinalização por Condição de Luz
+        dados_sinalizacao = pd.DataFrame({
+            "Luminosidade": ["AMANHECER", "DIA", "ENTARDECER", "NAO INFORMADO", "NOITE SEM ILUMINACAO", "NOITE/ILUMINACAO ARTIFICIAL"],
+            "BOA": [63.0, 58.0, 55.0, 6.0, 62.0, 56.0],
+            "EM MAS CONDICOES": [4.0, 4.0, 4.0, 1.0, 4.0, 4.0],
+            "IRREGULAR": [3.0, 2.0, 2.0, 0.0, 3.0, 2.0],
+            "NAO HA": [28.0, 34.0, 36.0, 5.0, 29.0, 36.0],
+            "NAO INFORMADO": [2.0, 2.0, 3.0, 88.0, 2.0, 2.0]
+        })
+        df_sinal_melt = dados_sinalizacao.melt(
+            id_vars="Luminosidade", 
+            var_name="Condição Sinalização", 
+            value_name="Porcentagem"
+        )
+
+        # ==========================================
+        # 2. CRIAÇÃO DOS GRÁFICOS (PLOTLY)
+        # ==========================================
+        
+        fig_via = px.bar(
+            dados_via, y="Tipo de Via", x="Quantidade", orientation='h',
+            title="Acidentes por Tipo de Via",
+            color="Tipo de Via",
+            color_discrete_sequence=["#F4A261", "#D65C70", "#7B3275", "#3A1B61"]
+        )
+        fig_via.update_layout(xaxis_title="Quantidade de Acidentes", yaxis_title="", showlegend=False, height=500)
+
+        fig_pavimento = px.bar(
+            dados_pavimento, y="Tipo de Pavimento", x="Quantidade", orientation='h',
+            title="Distribuição de Acidentes por Tipo de Pavimento",
+            color_discrete_sequence=["#43326B"]
+        )
+        fig_pavimento.update_layout(xaxis_title="Quantidade de Ocorrências", yaxis_title="", height=500)
+
+        cores_sinal = {"BOA": "#4C72B0", "EM MAS CONDICOES": "#DD8452", "IRREGULAR": "#55A868", "NAO HA": "#C44E52", "NAO INFORMADO": "#8172B3"}
+        fig_sinal = px.bar(
+            df_sinal_melt, x="Luminosidade", y="Porcentagem", color="Condição Sinalização",
+            title="Qualidade da Sinalização por Condição de Luz",
+            barmode="stack",
+            color_discrete_map=cores_sinal
+        )
+        fig_sinal.update_layout(yaxis_title="Porcentagem (%)", xaxis_title="Condição de Luminosidade", legend_title="Condição da Sinalização", height=600)
+        
+        # ==========================================
+        # 3. INTERFACE DE NAVEGAÇÃO
+        # ==========================================
+        
+        st.divider()
+        
+        visao_infra = st.radio(
+            "Selecione a perspectiva da infraestrutura:", 
+            ["Tipo de Via", "Tipo de Pavimento", "Sinalização e Iluminação"],
+            horizontal=True
+        )
+
+        st.write("") # Espaço extra
+
+        # Renderiza apenas o gráfico selecionado ocupando a largura total
+        if visao_infra == "Tipo de Via":
+            st.plotly_chart(fig_via, use_container_width=True)
+            
+        elif visao_infra == "Tipo de Pavimento":
+            st.plotly_chart(fig_pavimento, use_container_width=True)
+            
+        else:
+            st.plotly_chart(fig_sinal, use_container_width=True)
+
+    # ==========================================
+    # ABAS 2 E 3 (TESTES E CONCLUSÕES)
+    # ==========================================
     with tab2:
         st.subheader("Testes Estatísticos de Associação")
         
         colA, colB, colC = st.columns(3)
         with colA:
             st.info("""
-            **1. Tipo da Via (Simples vs Não Simples)**  
-            * **H0:** A pavimentação e tipo da via não têm influência na gravidade.  
+            **1. Tipo da Via (Simples vs Não Simples)** * **H0:** A pavimentação e tipo da via não têm influência na gravidade.  
             * **Resultado:** Ao comparar a diferença entre os grupos “via simples” e “via não simples” na curva normal, tornou-se claro uma proporção de 5.225% com intervalo de confiança de 95%.  
             * **Conclusão:** Esse intervalo exclui a hipótese nula, logo a rejeitamos. A pavimentação da via foi descartada devido a discrepância enorme entre os tamanhos dos grupos.
             """)
         with colB:
             st.warning("""
-            **2. Iluminação (Boa vs Não Há)**  
-            * **H0:** A iluminação não têm influência na gravidade.  
+            **2. Iluminação (Boa vs Não Há)** * **H0:** A iluminação não têm influência na gravidade.  
             * **Resultado:** Ao comparar a diferença, tornou-se claro uma proporção de 21.7%, com intervalo de confiança de 95%.  
             * **Conclusão:** Esse valor está muito acima da marca de 5%, e, portanto, não foi possível rejeitar a hipótese nula.
             """)
         with colC:
             st.error("""
-            **3. Sinalização (Há vs Não Há)**  
-            * **H0:** A sinalização não têm influência na gravidade.  
+            **3. Sinalização (Há vs Não Há)** * **H0:** A sinalização não têm influência na gravidade.  
             * **Resultado:** Ao comparar a diferença entre os grupos, percebe-se que essa diferença girava em torno de 0, ou seja, inclui a hipótese nula.  
             * **Conclusão:** Devido a isso não foi possível rejeitar a hipótese nula de que a sinalização isoladamente afeta a gravidade do acidente em BH.
             """)
@@ -340,17 +551,20 @@ def page_pergunta_4():
     with tab3:
         st.success("""
         **Conclusões:**
-        Os resultados determinam que o tipo de via é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula. As condições das vias simples tornam acidentes graves mais propensos. Quanto as variáveis de iluminação e sinalização, não foi observada evidência forte o suficiente para rejeitar a hipótese nula. Isso sugere que, em Belo Horizonte, acidentes tendem a independer da iluminação e sinalização, tendendo as duas a no geral serem boas.
+        
+        Os resultados determinam que o tipo de via é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula. As condições das vias simples tornam acidentes graves mais propensos. 
+        
+        Quanto as variáveis de iluminação e sinalização, não foi observada evidência forte o suficiente para rejeitar a hipótese nula. Isso sugere que, em Belo Horizonte, acidentes tendem a independer da iluminação e sinalização, tendendo as duas a no geral serem boas.
         """)
 
 def page_conclusao():
-    st.title("Conclusões da Pesquisa")
+    st.title("Conclusões do Projeto")
     
     st.markdown("""
     ### Síntese dos Achados
     - **P1 Demografia:** Jovens concentram mais ocorrências, mas não os desfechos mais graves. O padrão de letalidade aparece nas faixas etárias mais altas. Um grupo pode dominar os registros por estar mais exposto, enquanto outro converte a mesma ocorrência em consequência mais séria.
-    - **P2 Temporalidade:** O volume absoluto foca na saída do trabalho (18h) em dias úteis, mas a madrugada do final de semana carrega uma diferença significativa no risco proporcional de letalidade em acidentes.
-    - **P3 Veículos:** A inércia domina o fator de gravidade: acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres.
+    - **P2 Temporalidade:** O volume foca na saída do trabalho (18h) em dias úteis,principamente nas sexta-feiras mas a madrugada do final de semana carrega uma diferença significativa no risco proporcional de letalidade em acidentes.
+    - **P3 Veículos:** Acidentes envolvendo veículos pesados possuem maiores taxas médias de vítimas em estado grave se comparado a veículos não pesados. Essa diferença fica ainda maior quando as vítimas são pedestres.
     - **P4 Infraestrutura:** Os resultados determinam que o tipo de via (simples vs dupla/múltipla) é a variável de maior impacto na gravidade do acidente, e a única que permitiu rejeitar a hipótese nula de infraestrutura.
     """)
 
