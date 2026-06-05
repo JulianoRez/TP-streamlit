@@ -130,8 +130,13 @@ def page_pergunta_1():
         cor = pd.DataFrame({"Cor/Raça": ["Negra", "Preto", "Parda", "Branca"], "Taxa": [0.0972, 0.0860, 0.0855, 0.0797]})
         faixa = pd.DataFrame({"Faixa Etária": ["80+", "70-79", "60-69", "18-29"], "Taxa": [0.1608, 0.1287, 0.1148, 0.0761]})
         
-        st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
-        st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            st.markdown("##### Letalidade por Perfil (Sexo, Cor e Idade)")
+            st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
+        with col2:
+            st.markdown("##### Ranking dos Perfis mais Letais (N > 100)")
+            st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
 
     with tab2:
         st.subheader("Teste de Hipótese: Homens Jovens (18-25) e Pardos")
@@ -297,8 +302,13 @@ def page_pergunta_4():
         via_df = pd.DataFrame({"Tipo de Via": ["Pista Simples", "Pista Dupla", "Pista Múltipla", "Não Informado"], "Porcentagem": [52.87, 26.28, 20.20, 0.66]}).sort_values("Porcentagem")
         sin_df = pd.DataFrame({"Sinalização": ["Boa", "Não Há", "Em Más Condições", "Não Informado", "Irregular"], "Porcentagem": [74.63, 16.83, 3.56, 3.20, 1.78]}).sort_values("Porcentagem")
         
-        st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
-        st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            st.markdown("##### Letalidade por Perfil (Sexo, Cor e Idade)")
+            st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
+        with col2:
+            st.markdown("##### Ranking dos Perfis mais Letais (N > 100)")
+            st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
             
 
     with tab2:
