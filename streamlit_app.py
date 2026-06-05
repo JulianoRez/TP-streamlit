@@ -130,13 +130,8 @@ def page_pergunta_1():
         cor = pd.DataFrame({"Cor/Raça": ["Negra", "Preto", "Parda", "Branca"], "Taxa": [0.0972, 0.0860, 0.0855, 0.0797]})
         faixa = pd.DataFrame({"Faixa Etária": ["80+", "70-79", "60-69", "18-29"], "Taxa": [0.1608, 0.1287, 0.1148, 0.0761]})
         
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.empty()
-        with col2:
-            st.empty()
-        with col3:
-            st.empty()
+        st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
+        st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
 
     with tab2:
         st.subheader("Teste de Hipótese: Homens Jovens (18-25) e Pardos")
@@ -261,6 +256,7 @@ def page_pergunta_3():
             * **HA:** Acidentes que envolvem veículos pesados tendem a, em média, possuir maiores proporções de vítimas pedestres em estado grave do que os demais tipos de veículo.  
             * **Resultado:** Com esse teste, nossa hipótese nula pode ser rejeitada, pois ela não pertence ao IC mostrado. A diferença média observada é positiva, o que nos permite tomar a hipótese alternativa como verdadeira.
             """)
+            st.image("images/Figure_1.png", use_container_width=True)
         with colB:
             st.warning("""
             **2. Motos (Condutores e Passageiros)**  
@@ -268,12 +264,14 @@ def page_pergunta_3():
             * **HA:** Acidentes que envolvem motos tendem a, em média, possuir maiores proporções de vítimas condutoras ou passageiras em estado grave do que os demais tipos de veículo.  
             * **Resultado:** A hipótese nula é rejeitada, pois ela não pertence ao IC. Todavia, a diferença média observada é negativa, o que não está de acordo com a hipótese alternativa, pois, para tanto, a média devia ser positiva. Acidentes exclusivos de motos e suas vítimas possuem, em média, menores taxas em estado grave, quando comparados a veículos não motos.
             """)
+            st.image("images/Figure_3.png", use_container_width=True)
         with colC:
             st.success("""
             **Uso do Bootstrap**  
             Para a comparação da diferença entre proporções de vítimas pesadas e não pesadas, foi construída uma distribuição Bootstrap de 5.000 subamostras.  
             Os limites de 2,5% e 97,5% da distribuição do Bootstrap excluíram o zero (Hipótese Nula), confirmando estatisticamente as observações com um alto rigor de amostragem.
             """)
+            st.image("images/teste.png", use_container_width=True)
 
     with tab3:
         st.success("""
@@ -299,13 +297,8 @@ def page_pergunta_4():
         via_df = pd.DataFrame({"Tipo de Via": ["Pista Simples", "Pista Dupla", "Pista Múltipla", "Não Informado"], "Porcentagem": [52.87, 26.28, 20.20, 0.66]}).sort_values("Porcentagem")
         sin_df = pd.DataFrame({"Sinalização": ["Boa", "Não Há", "Em Más Condições", "Não Informado", "Irregular"], "Porcentagem": [74.63, 16.83, 3.56, 3.20, 1.78]}).sort_values("Porcentagem")
         
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.empty()
-        with col2:
-            st.empty()
-        with col3:
-            st.empty()
+        st.image("images/perfil_demografico_graves_fatais.png", use_container_width=True)
+        st.image("images/ranking_perfis_demograficos_graves_fatais.png", use_container_width=True)
             
 
     with tab2:

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#1f2937}.title{font-size:24px;font-weight:700}.subtitle{font-size:14px;fill:#4b5563}.axis{stroke:#374151;stroke-width:1}.grid{stroke:#e5e7eb;stroke-width:1}.label{font-size:12px}.tick{font-size:11px;fill:#4b5563}.note{font-size:12px;fill:#6b7280}</style>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="90" y="38" class="title">Acidentes por hora do dia</text>
+<text x="20" y="315.0" class="label" transform="rotate(-90 20 315.0)">Ocorrências</text>
+<line x1="90" y1="535.00" x2="1075" y2="535.00" class="grid"/>
+<text x="80" y="539.00" text-anchor="end" class="tick">0</text>
+<line x1="90" y1="447.00" x2="1075" y2="447.00" class="grid"/>
+<text x="80" y="451.00" text-anchor="end" class="tick">17.583</text>
+<line x1="90" y1="359.00" x2="1075" y2="359.00" class="grid"/>
+<text x="80" y="363.00" text-anchor="end" class="tick">35.166</text>
+<line x1="90" y1="271.00" x2="1075" y2="271.00" class="grid"/>
+<text x="80" y="275.00" text-anchor="end" class="tick">52.748</text>
+<line x1="90" y1="183.00" x2="1075" y2="183.00" class="grid"/>
+<text x="80" y="187.00" text-anchor="end" class="tick">70.331</text>
+<line x1="90" y1="95.00" x2="1075" y2="95.00" class="grid"/>
+<text x="80" y="99.00" text-anchor="end" class="tick">87.914</text>
+<line x1="90" y1="95" x2="90" y2="535" class="axis"/>
+<line x1="90" y1="535" x2="1075" y2="535" class="axis"/>
+<rect x="90.00" y="480.53" width="33.38" height="54.47" fill="#2563eb" rx="3"/>
+<text x="106.69" y="473.53" text-anchor="middle" class="tick">10.884</text>
+<text x="106.69" y="555.00" text-anchor="end" class="label" transform="rotate(-45 106.69 555.00)">00h</text>
+<rect x="131.38" y="498.84" width="33.38" height="36.16" fill="#2563eb" rx="3"/>
+<text x="148.06" y="491.84" text-anchor="middle" class="tick">7.225</text>
+<text x="148.06" y="555.00" text-anchor="end" class="label" transform="rotate(-45 148.06 555.00)">01h</text>
+<rect x="172.75" y="508.41" width="33.38" height="26.59" fill="#2563eb" rx="3"/>
+<text x="189.44" y="501.41" text-anchor="middle" class="tick">5.312</text>
+<text x="189.44" y="555.00" text-anchor="end" class="label" transform="rotate(-45 189.44 555.00)">02h</text>
+<rect x="214.12" y="512.88" width="33.38" height="22.12" fill="#2563eb" rx="3"/>
+<text x="230.81" y="505.88" text-anchor="middle" class="tick">4.420</text>
+<text x="230.81" y="555.00" text-anchor="end" class="label" transform="rotate(-45 230.81 555.00)">03h</text>
+<rect x="255.50" y="513.07" width="33.38" height="21.93" fill="#2563eb" rx="3"/>
+<text x="272.19" y="506.07" text-anchor="middle" class="tick">4.382</text>
+<text x="272.19" y="555.00" text-anchor="end" class="label" transform="rotate(-45 272.19 555.00)">04h</text>
+<rect x="296.88" y="502.43" width="33.38" height="32.57" fill="#2563eb" rx="3"/>
+<text x="313.56" y="495.43" text-anchor="middle" class="tick">6.508</text>
+<text x="313.56" y="555.00" text-anchor="end" class="label" transform="rotate(-45 313.56 555.00)">05h</text>
+<rect x="338.25" y="427.66" width="33.38" height="107.34" fill="#2563eb" rx="3"/>
+<text x="354.94" y="420.66" text-anchor="middle" class="tick">21.447</text>
+<text x="354.94" y="555.00" text-anchor="end" class="label" transform="rotate(-45 354.94 555.00)">06h</text>
+<rect x="379.62" y="272.41" width="33.38" height="262.59" fill="#2563eb" rx="3"/>
+<text x="396.31" y="265.41" text-anchor="middle" class="tick">52.467</text>
+<text x="396.31" y="555.00" text-anchor="end" class="label" transform="rotate(-45 396.31 555.00)">07h</text>
+<rect x="421.00" y="245.44" width="33.38" height="289.56" fill="#2563eb" rx="3"/>
+<text x="437.69" y="238.44" text-anchor="middle" class="tick">57.856</text>
+<text x="437.69" y="555.00" text-anchor="end" class="label" transform="rotate(-45 437.69 555.00)">08h</text>
+<rect x="462.38" y="249.35" width="33.38" height="285.65" fill="#2563eb" rx="3"/>
+<text x="479.06" y="242.35" text-anchor="middle" class="tick">57.074</text>
+<text x="479.06" y="555.00" text-anchor="end" class="label" transform="rotate(-45 479.06 555.00)">09h</text>
+<rect x="503.75" y="245.48" width="33.38" height="289.52" fill="#2563eb" rx="3"/>
+<text x="520.44" y="238.48" text-anchor="middle" class="tick">57.848</text>
+<text x="520.44" y="555.00" text-anchor="end" class="label" transform="rotate(-45 520.44 555.00)">10h</text>
+<rect x="545.12" y="231.85" width="33.38" height="303.15" fill="#2563eb" rx="3"/>
+<text x="561.81" y="224.85" text-anchor="middle" class="tick">60.571</text>
+<text x="561.81" y="555.00" text-anchor="end" class="label" transform="rotate(-45 561.81 555.00)">11h</text>
+<rect x="586.50" y="223.36" width="33.38" height="311.64" fill="#2563eb" rx="3"/>
+<text x="603.19" y="216.36" text-anchor="middle" class="tick">62.267</text>
+<text x="603.19" y="555.00" text-anchor="end" class="label" transform="rotate(-45 603.19 555.00)">12h</text>
+<rect x="627.88" y="211.16" width="33.38" height="323.84" fill="#2563eb" rx="3"/>
+<text x="644.56" y="204.16" text-anchor="middle" class="tick">64.704</text>
+<text x="644.56" y="555.00" text-anchor="end" class="label" transform="rotate(-45 644.56 555.00)">13h</text>
+<rect x="669.25" y="191.34" width="33.38" height="343.66" fill="#2563eb" rx="3"/>
+<text x="685.94" y="184.34" text-anchor="middle" class="tick">68.664</text>
+<text x="685.94" y="555.00" text-anchor="end" class="label" transform="rotate(-45 685.94 555.00)">14h</text>
+<rect x="710.62" y="181.26" width="33.38" height="353.74" fill="#2563eb" rx="3"/>
+<text x="727.31" y="174.26" text-anchor="middle" class="tick">70.678</text>
+<text x="727.31" y="555.00" text-anchor="end" class="label" transform="rotate(-45 727.31 555.00)">15h</text>
+<rect x="752.00" y="165.46" width="33.38" height="369.54" fill="#2563eb" rx="3"/>
+<text x="768.69" y="158.46" text-anchor="middle" class="tick">73.835</text>
+<text x="768.69" y="555.00" text-anchor="end" class="label" transform="rotate(-45 768.69 555.00)">16h</text>
+<rect x="793.38" y="140.26" width="33.38" height="394.74" fill="#dc2626" rx="3"/>
+<text x="810.06" y="133.26" text-anchor="middle" class="tick">78.870</text>
+<text x="810.06" y="555.00" text-anchor="end" class="label" transform="rotate(-45 810.06 555.00)">17h</text>
+<rect x="834.75" y="127.59" width="33.38" height="407.41" fill="#dc2626" rx="3"/>
+<text x="851.44" y="120.59" text-anchor="middle" class="tick">81.402</text>
+<text x="851.44" y="555.00" text-anchor="end" class="label" transform="rotate(-45 851.44 555.00)">18h</text>
+<rect x="876.12" y="194.21" width="33.38" height="340.79" fill="#dc2626" rx="3"/>
+<text x="892.81" y="187.21" text-anchor="middle" class="tick">68.092</text>
+<text x="892.81" y="555.00" text-anchor="end" class="label" transform="rotate(-45 892.81 555.00)">19h</text>
+<rect x="917.50" y="294.34" width="33.38" height="240.66" fill="#2563eb" rx="3"/>
+<text x="934.19" y="287.34" text-anchor="middle" class="tick">48.086</text>
+<text x="934.19" y="555.00" text-anchor="end" class="label" transform="rotate(-45 934.19 555.00)">20h</text>
+<rect x="958.88" y="366.86" width="33.38" height="168.14" fill="#2563eb" rx="3"/>
+<text x="975.56" y="359.86" text-anchor="middle" class="tick">33.595</text>
+<text x="975.56" y="555.00" text-anchor="end" class="label" transform="rotate(-45 975.56 555.00)">21h</text>
+<rect x="1000.25" y="403.56" width="33.38" height="131.44" fill="#2563eb" rx="3"/>
+<text x="1016.94" y="396.56" text-anchor="middle" class="tick">26.263</text>
+<text x="1016.94" y="555.00" text-anchor="end" class="label" transform="rotate(-45 1016.94 555.00)">22h</text>
+<rect x="1041.62" y="446.08" width="33.38" height="88.92" fill="#2563eb" rx="3"/>
+<text x="1058.31" y="439.08" text-anchor="middle" class="tick">17.767</text>
+<text x="1058.31" y="555.00" text-anchor="end" class="label" transform="rotate(-45 1058.31 555.00)">23h</text>
+</svg>

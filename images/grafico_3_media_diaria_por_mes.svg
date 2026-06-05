@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#1f2937}.title{font-size:24px;font-weight:700}.subtitle{font-size:14px;fill:#4b5563}.axis{stroke:#374151;stroke-width:1}.grid{stroke:#e5e7eb;stroke-width:1}.label{font-size:12px}.tick{font-size:11px;fill:#4b5563}.note{font-size:12px;fill:#6b7280}</style>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="90" y="38" class="title">Media diaria de acidentes por mes</text>
+<text x="20" y="315.0" class="label" transform="rotate(-90 20 315.0)">Media diaria de ocorrencias</text>
+<line x1="90" y1="535.00" x2="1075" y2="535.00" class="grid"/>
+<text x="80" y="539.00" text-anchor="end" class="tick">0,0</text>
+<line x1="90" y1="447.00" x2="1075" y2="447.00" class="grid"/>
+<text x="80" y="451.00" text-anchor="end" class="tick">47,0</text>
+<line x1="90" y1="359.00" x2="1075" y2="359.00" class="grid"/>
+<text x="80" y="363.00" text-anchor="end" class="tick">93,9</text>
+<line x1="90" y1="271.00" x2="1075" y2="271.00" class="grid"/>
+<text x="80" y="275.00" text-anchor="end" class="tick">140,9</text>
+<line x1="90" y1="183.00" x2="1075" y2="183.00" class="grid"/>
+<text x="80" y="187.00" text-anchor="end" class="tick">187,9</text>
+<line x1="90" y1="95.00" x2="1075" y2="95.00" class="grid"/>
+<text x="80" y="99.00" text-anchor="end" class="tick">234,9</text>
+<line x1="90" y1="95" x2="90" y2="535" class="axis"/>
+<line x1="90" y1="535" x2="1075" y2="535" class="axis"/>
+<rect x="90.00" y="216.68" width="74.75" height="318.32" fill="#dc2626" rx="3"/>
+<text x="127.38" y="209.68" text-anchor="middle" class="tick">169,9</text>
+<text x="127.38" y="555.00" text-anchor="middle" class="label">Jan</text>
+<rect x="172.75" y="151.87" width="74.75" height="383.13" fill="#2563eb" rx="3"/>
+<text x="210.12" y="144.87" text-anchor="middle" class="tick">204,5</text>
+<text x="210.12" y="555.00" text-anchor="middle" class="label">Fev</text>
+<rect x="255.50" y="150.39" width="74.75" height="384.61" fill="#2563eb" rx="3"/>
+<text x="292.88" y="143.39" text-anchor="middle" class="tick">205,3</text>
+<text x="292.88" y="555.00" text-anchor="middle" class="label">Mar</text>
+<rect x="338.25" y="169.59" width="74.75" height="365.41" fill="#2563eb" rx="3"/>
+<text x="375.62" y="162.59" text-anchor="middle" class="tick">195,0</text>
+<text x="375.62" y="555.00" text-anchor="middle" class="label">Abr</text>
+<rect x="421.00" y="161.22" width="74.75" height="373.78" fill="#2563eb" rx="3"/>
+<text x="458.38" y="154.22" text-anchor="middle" class="tick">199,5</text>
+<text x="458.38" y="555.00" text-anchor="middle" class="label">Mai</text>
+<rect x="503.75" y="159.21" width="74.75" height="375.79" fill="#2563eb" rx="3"/>
+<text x="541.12" y="152.21" text-anchor="middle" class="tick">200,6</text>
+<text x="541.12" y="555.00" text-anchor="middle" class="label">Jun</text>
+<rect x="586.50" y="165.54" width="74.75" height="369.46" fill="#2563eb" rx="3"/>
+<text x="623.88" y="158.54" text-anchor="middle" class="tick">197,2</text>
+<text x="623.88" y="555.00" text-anchor="middle" class="label">Jul</text>
+<rect x="669.25" y="138.36" width="74.75" height="396.64" fill="#2563eb" rx="3"/>
+<text x="706.62" y="131.36" text-anchor="middle" class="tick">211,7</text>
+<text x="706.62" y="555.00" text-anchor="middle" class="label">Ago</text>
+<rect x="752.00" y="133.90" width="74.75" height="401.10" fill="#2563eb" rx="3"/>
+<text x="789.38" y="126.90" text-anchor="middle" class="tick">214,1</text>
+<text x="789.38" y="555.00" text-anchor="middle" class="label">Set</text>
+<rect x="834.75" y="135.36" width="74.75" height="399.64" fill="#2563eb" rx="3"/>
+<text x="872.12" y="128.36" text-anchor="middle" class="tick">213,3</text>
+<text x="872.12" y="555.00" text-anchor="middle" class="label">Out</text>
+<rect x="917.50" y="127.59" width="74.75" height="407.41" fill="#dc2626" rx="3"/>
+<text x="954.88" y="120.59" text-anchor="middle" class="tick">217,5</text>
+<text x="954.88" y="555.00" text-anchor="middle" class="label">Nov</text>
+<rect x="1000.25" y="136.35" width="74.75" height="398.65" fill="#2563eb" rx="3"/>
+<text x="1037.62" y="129.35" text-anchor="middle" class="tick">212,8</text>
+<text x="1037.62" y="555.00" text-anchor="middle" class="label">Dez</text>
+</svg>

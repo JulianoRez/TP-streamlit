@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#1f2937}.title{font-size:24px;font-weight:700}.subtitle{font-size:14px;fill:#4b5563}.axis{stroke:#374151;stroke-width:1}.grid{stroke:#e5e7eb;stroke-width:1}.label{font-size:12px}.tick{font-size:11px;fill:#4b5563}.note{font-size:12px;fill:#6b7280}</style>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="90" y="38" class="title">Media diaria de acidentes por dia da semana</text>
+<text x="20" y="315.0" class="label" transform="rotate(-90 20 315.0)">Media diaria de ocorrencias</text>
+<line x1="90" y1="535.00" x2="1075" y2="535.00" class="grid"/>
+<text x="80" y="539.00" text-anchor="end" class="tick">0,0</text>
+<line x1="90" y1="447.00" x2="1075" y2="447.00" class="grid"/>
+<text x="80" y="451.00" text-anchor="end" class="tick">52,2</text>
+<line x1="90" y1="359.00" x2="1075" y2="359.00" class="grid"/>
+<text x="80" y="363.00" text-anchor="end" class="tick">104,3</text>
+<line x1="90" y1="271.00" x2="1075" y2="271.00" class="grid"/>
+<text x="80" y="275.00" text-anchor="end" class="tick">156,5</text>
+<line x1="90" y1="183.00" x2="1075" y2="183.00" class="grid"/>
+<text x="80" y="187.00" text-anchor="end" class="tick">208,7</text>
+<line x1="90" y1="95.00" x2="1075" y2="95.00" class="grid"/>
+<text x="80" y="99.00" text-anchor="end" class="tick">260,8</text>
+<line x1="90" y1="95" x2="90" y2="535" class="axis"/>
+<line x1="90" y1="535" x2="1075" y2="535" class="axis"/>
+<rect x="90.00" y="162.29" width="133.86" height="372.71" fill="#2563eb" rx="3"/>
+<text x="156.93" y="155.29" text-anchor="middle" class="tick">220,9</text>
+<text x="156.93" y="555.00" text-anchor="middle" class="label">Seg</text>
+<rect x="231.86" y="170.75" width="133.86" height="364.25" fill="#2563eb" rx="3"/>
+<text x="298.79" y="163.75" text-anchor="middle" class="tick">215,9</text>
+<text x="298.79" y="555.00" text-anchor="middle" class="label">Ter</text>
+<rect x="373.71" y="165.52" width="133.86" height="369.48" fill="#2563eb" rx="3"/>
+<text x="440.64" y="158.52" text-anchor="middle" class="tick">219,0</text>
+<text x="440.64" y="555.00" text-anchor="middle" class="label">Qua</text>
+<rect x="515.57" y="170.68" width="133.86" height="364.32" fill="#2563eb" rx="3"/>
+<text x="582.50" y="163.68" text-anchor="middle" class="tick">216,0</text>
+<text x="582.50" y="555.00" text-anchor="middle" class="label">Qui</text>
+<rect x="657.43" y="127.59" width="133.86" height="407.41" fill="#dc2626" rx="3"/>
+<text x="724.36" y="120.59" text-anchor="middle" class="tick">241,5</text>
+<text x="724.36" y="555.00" text-anchor="middle" class="label">Sex</text>
+<rect x="799.29" y="224.97" width="133.86" height="310.03" fill="#2563eb" rx="3"/>
+<text x="866.21" y="217.97" text-anchor="middle" class="tick">183,8</text>
+<text x="866.21" y="555.00" text-anchor="middle" class="label">Sab</text>
+<rect x="941.14" y="321.25" width="133.86" height="213.75" fill="#2563eb" rx="3"/>
+<text x="1008.07" y="314.25" text-anchor="middle" class="tick">126,7</text>
+<text x="1008.07" y="555.00" text-anchor="middle" class="label">Dom</text>
+</svg>
